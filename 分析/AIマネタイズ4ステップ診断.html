@@ -1,0 +1,422 @@
+<title>AIマネタイズ4ステップ診断</title>
+<style>
+  :root{
+    --bg:#F6F7F9; --surface:#FFFFFF; --surface-2:#EFF2F6;
+    --ink:#14181F; --ink-2:#4A5461; --ink-3:#7C8796;
+    --line:#DFE3E9; --line-strong:#C6CDD7;
+    --red:#C9382C; --blue:#2457B8; --green:#1B7A5A; --amber:#A8701A;
+    --red-soft:#FBECEA; --blue-soft:#EAF0FC; --green-soft:#E7F4EF; --amber-soft:#FAF1E2;
+    --shadow:0 1px 2px rgba(20,24,31,.05), 0 8px 24px -16px rgba(20,24,31,.25);
+    --fs-body:1rem;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0F1216; --surface:#171B21; --surface-2:#1E242C;
+      --ink:#E9EDF3; --ink-2:#A8B3C0; --ink-3:#77838F;
+      --line:#2A313A; --line-strong:#3A434E;
+      --red:#F07162; --blue:#86A9F2; --green:#4FC79D; --amber:#DFA956;
+      --red-soft:#2A1A18; --blue-soft:#161F2E; --green-soft:#132520; --amber-soft:#261F12;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0F1216; --surface:#171B21; --surface-2:#1E242C;
+    --ink:#E9EDF3; --ink-2:#A8B3C0; --ink-3:#77838F;
+    --line:#2A313A; --line-strong:#3A434E;
+    --red:#F07162; --blue:#86A9F2; --green:#4FC79D; --amber:#DFA956;
+    --red-soft:#2A1A18; --blue-soft:#161F2E; --green-soft:#132520; --amber-soft:#261F12;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+  }
+
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:"Noto Sans JP", -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+    font-size:var(--fs-body); line-height:1.85;
+    -webkit-font-smoothing:antialiased;
+    font-feature-settings:"palt" 1;
+  }
+  .wrap{ max-width:820px; margin:0 auto; padding-inline:20px; padding-block:40px 72px; }
+
+  h1,h2,h3,h4{ font-family:"Zen Kaku Gothic New", "Noto Sans JP", sans-serif; text-wrap:balance; line-height:1.4; margin:0; }
+  h1{ font-size:clamp(1.65rem, 5.5vw, 2.5rem); font-weight:900; letter-spacing:-.01em; }
+  h2{ font-size:clamp(1.25rem, 3.6vw, 1.6rem); font-weight:800; }
+  h3{ font-size:1.08rem; font-weight:700; }
+  p{ margin:0; }
+  strong{ font-weight:700; }
+  a{ color:var(--blue); }
+
+  .eyebrow{
+    font-family:"Roboto Mono", ui-monospace, monospace;
+    font-size:.72rem; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-3);
+  }
+
+  /* ---- header ---- */
+  header.masthead{ display:flex; flex-direction:column; gap:14px; padding-bottom:28px; border-bottom:2px solid var(--ink); }
+  .masthead .lede{ color:var(--ink-2); font-size:1.02rem; }
+  .meta{ display:flex; flex-wrap:wrap; gap:8px 18px; font-family:"Roboto Mono", monospace; font-size:.74rem; color:var(--ink-3); }
+
+  /* ---- verdict ---- */
+  .verdict{ margin-top:32px; background:var(--surface); border:1px solid var(--line); border-left:4px solid var(--red); border-radius:2px 10px 10px 2px; padding:22px 22px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:12px; }
+  .verdict p + p{ margin-top:0; }
+
+  /* ---- stage rail ---- */
+  .rail{ display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-top:26px; }
+  @media (max-width:640px){ .rail{ grid-template-columns:repeat(2,1fr); } }
+  .stage{ background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:14px 13px; display:flex; flex-direction:column; gap:8px; }
+  .stage .num{ font-family:"Roboto Mono", monospace; font-size:.72rem; color:var(--ink-3); letter-spacing:.1em; }
+  .stage .name{ font-family:"Zen Kaku Gothic New", sans-serif; font-weight:800; font-size:.96rem; line-height:1.35; }
+  .bar{ height:6px; border-radius:99px; background:var(--surface-2); overflow:hidden; }
+  .bar span{ display:block; height:100%; border-radius:99px; }
+  .stage .score{ font-family:"Roboto Mono", monospace; font-size:.72rem; color:var(--ink-2); font-variant-numeric:tabular-nums; }
+
+  /* ---- chips ---- */
+  .chip{ display:inline-flex; align-items:center; gap:5px; font-size:.75rem; font-weight:700; padding:2px 9px; border-radius:99px; white-space:nowrap; line-height:1.7; }
+  .chip.ok{ background:var(--green-soft); color:var(--green); }
+  .chip.partial{ background:var(--amber-soft); color:var(--amber); }
+  .chip.no{ background:var(--red-soft); color:var(--red); }
+  .chip.hold{ background:var(--blue-soft); color:var(--blue); }
+
+  section{ margin-top:52px; }
+  .sec-head{ display:flex; flex-direction:column; gap:6px; margin-bottom:18px; }
+
+  /* ---- definition blocks ---- */
+  .def{ background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:20px; margin-top:14px; }
+  .def h3{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+  .def h3 .mark{ font-family:"Roboto Mono", monospace; color:var(--red); font-size:1.15rem; font-weight:700; }
+  .def > p{ margin-top:10px; color:var(--ink-2); }
+  .gate{ margin-top:14px; background:var(--surface-2); border-radius:8px; padding:12px 14px; font-size:.92rem; }
+  .gate .gate-label{ font-family:"Roboto Mono", monospace; font-size:.7rem; letter-spacing:.1em; color:var(--ink-3); display:block; margin-bottom:4px; }
+
+  ul.tight{ margin:10px 0 0; padding-left:1.15em; display:flex; flex-direction:column; gap:7px; }
+  ul.tight li{ color:var(--ink-2); }
+  ul.tight li strong{ color:var(--ink); }
+
+  /* ---- numbers row ---- */
+  .nums{ display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:10px; margin-top:16px; }
+  .numcard{ background:var(--surface-2); border-radius:8px; padding:12px 13px; }
+  .numcard .v{ font-family:"Roboto Mono", monospace; font-weight:700; font-size:1.3rem; color:var(--red); font-variant-numeric:tabular-nums; line-height:1.3; }
+  .numcard .k{ font-size:.78rem; color:var(--ink-2); line-height:1.6; margin-top:3px; }
+
+  /* ---- assessment table ---- */
+  .tbl-scroll{ overflow-x:auto; margin-top:14px; border:1px solid var(--line); border-radius:10px; background:var(--surface); }
+  table{ border-collapse:collapse; width:100%; min-width:560px; font-size:.9rem; }
+  th,td{ text-align:left; padding:11px 14px; border-bottom:1px solid var(--line); vertical-align:top; }
+  thead th{ background:var(--surface-2); font-family:"Zen Kaku Gothic New", sans-serif; font-weight:700; font-size:.8rem; color:var(--ink-2); white-space:nowrap; }
+  tbody tr:last-child td{ border-bottom:none; }
+  td.st{ white-space:nowrap; }
+  .src{ display:block; font-size:.76rem; color:var(--ink-3); font-family:"Roboto Mono", monospace; margin-top:4px; }
+
+  /* ---- funnel ---- */
+  .funnel{ display:flex; flex-direction:column; gap:6px; margin-top:16px; }
+  .fstep{ display:flex; align-items:center; gap:12px; }
+  .fstep .track{ flex:1; min-width:0; background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:10px 13px; display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .fstep .track .lbl{ font-size:.88rem; }
+  .fstep .track .val{ font-family:"Roboto Mono", monospace; font-weight:700; font-variant-numeric:tabular-nums; font-size:.95rem; }
+  .fstep .val.unknown{ color:var(--red); }
+  .fstep .val.known{ color:var(--green); }
+  .f1{ width:100%; } .f2{ width:88%; } .f3{ width:72%; } .f4{ width:56%; } .f5{ width:40%; }
+  @media (max-width:640px){ .f2,.f3,.f4,.f5{ width:100%; } }
+  .funnel-note{ font-size:.84rem; color:var(--ink-3); margin-top:12px; }
+
+  /* ---- sheet ---- */
+  .sheet td.blank{ background:var(--surface-2); color:var(--ink-3); font-family:"Roboto Mono", monospace; text-align:center; }
+  .formula{ font-family:"Roboto Mono", ui-monospace, monospace; font-size:.85rem; background:var(--surface-2); padding:10px 13px; border-radius:6px; display:block; overflow-x:auto; white-space:nowrap; }
+
+  /* ---- plan ---- */
+  .plan{ display:flex; flex-direction:column; gap:0; margin-top:14px; border-left:2px solid var(--line-strong); padding-left:0; }
+  .phase{ position:relative; padding:0 0 26px 26px; }
+  .phase:last-child{ padding-bottom:0; }
+  .phase::before{ content:""; position:absolute; left:-6px; top:7px; width:10px; height:10px; border-radius:99px; background:var(--red); border:2px solid var(--bg); }
+  .phase .when{ font-family:"Roboto Mono", monospace; font-size:.74rem; letter-spacing:.08em; color:var(--red); font-weight:700; }
+  .phase h3{ margin-top:2px; }
+
+  /* ---- this week ---- */
+  .week{ margin-top:16px; display:flex; flex-direction:column; gap:10px; }
+  .task{ background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:15px 17px; display:flex; gap:14px; align-items:flex-start; }
+  .task .n{ font-family:"Roboto Mono", monospace; font-weight:700; color:var(--blue); font-size:1rem; flex:none; padding-top:1px; }
+  .task .body{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+  .task .body .t{ font-weight:700; font-family:"Zen Kaku Gothic New", sans-serif; }
+  .task .body .d{ font-size:.89rem; color:var(--ink-2); }
+  code{ font-family:"Roboto Mono", monospace; font-size:.85em; background:var(--surface-2); padding:1px 5px; border-radius:4px; word-break:break-all; }
+
+  .callout{ margin-top:16px; background:var(--blue-soft); border-radius:10px; padding:16px 18px; font-size:.94rem; }
+  .callout .ttl{ font-family:"Zen Kaku Gothic New", sans-serif; font-weight:800; color:var(--blue); display:block; margin-bottom:5px; }
+
+  footer{ margin-top:60px; padding-top:24px; border-top:1px solid var(--line); font-size:.82rem; color:var(--ink-3); }
+  footer ul{ margin:10px 0 0; padding-left:1.15em; display:flex; flex-direction:column; gap:5px; }
+  footer a{ color:var(--ink-2); text-decoration:none; border-bottom:1px solid var(--line-strong); }
+  footer a:hover{ color:var(--blue); }
+  :focus-visible{ outline:2px solid var(--blue); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700;900&family=Noto+Sans+JP:wght@400;500;700&family=Roboto+Mono:wght@400;700&display=swap">
+
+<div class="wrap">
+
+  <header class="masthead">
+    <span class="eyebrow">運用診断 / ShotaWatanabe リポジトリ</span>
+    <h1>AIマネタイズ4ステップ診断</h1>
+    <p class="lede">ホワイトボードの「①PMF ②ユニットエコノミクスの最適化 ③スケーラビリティの担保 ④スケール」を調べ直し、いまの運用（週次SNSリサーチ・承認待ち・投稿ルーティン）のどこが乗っていて、どこが空白かを1枚にしました。</p>
+    <div class="meta">
+      <span>作成 2026-09-20</span>
+      <span>対象 認知科学ベースのコーチング発信</span>
+      <span>根拠 リポジトリ内の全ファイル＋公開情報</span>
+    </div>
+  </header>
+
+  <div class="verdict">
+    <span class="eyebrow" style="color:var(--red)">結論</span>
+    <p><strong>③が一番進んでいて、②がまったく存在しない。</strong>ふつうは逆です。承認待ちの一元化もリサーチの蓄積も、③スケーラビリティの担保そのもので、個人事業としてはかなり先を行っています。いっぽうで、<strong>商品・価格・成約・継続の数字がリポジトリのどこにも1つもありません</strong>。①も半分（誰に何を言うか）だけで、もう半分（その商品が刺さっている証拠）が取れていない状態です。</p>
+    <p>したがって今やるべきは④スケールではなく、<strong>①の後半と②を、③のうまくいっている仕組みに同じやり方で載せること</strong>です。順番を飛ばして④に行くと、合っているか分からない経済性をそのまま拡大することになります。</p>
+  </div>
+
+  <div class="rail">
+    <div class="stage">
+      <span class="num">STEP 01</span>
+      <span class="name">PMF</span>
+      <div class="bar"><span style="width:45%; background:var(--amber)"></span></div>
+      <span class="score">45% ／ 発信は◯・商品は未検証</span>
+    </div>
+    <div class="stage">
+      <span class="num">STEP 02</span>
+      <span class="name">ユニットエコノミクス</span>
+      <div class="bar"><span style="width:10%; background:var(--red)"></span></div>
+      <span class="score">10% ／ 計算に必要な数字がない</span>
+    </div>
+    <div class="stage">
+      <span class="num">STEP 03</span>
+      <span class="name">スケーラビリティ</span>
+      <div class="bar"><span style="width:60%; background:var(--green)"></span></div>
+      <span class="score">60% ／ 周辺は◯・提供の中核は未</span>
+    </div>
+    <div class="stage">
+      <span class="num">STEP 04</span>
+      <span class="name">スケール</span>
+      <div class="bar"><span style="width:5%; background:var(--line-strong)"></span></div>
+      <span class="score">5% ／ いまは着手しないのが正解</span>
+    </div>
+  </div>
+
+  <!-- ============ 1. 各ステップの中身 ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">Part 1</span>
+      <h2>4ステップは、それぞれ「何が揃ったら次へ進んでいいか」で決まっている</h2>
+    </div>
+    <p style="color:var(--ink-2)">この4つは並列のチェックリストではなく、<strong>前が閉まっていると次が開かない関門（ゲート）</strong>です。調べた範囲でも、スケール着手はPMF達成後、かつユニットエコノミクスの整合が取れ、スケーラビリティの見立てが具体化してから、という順序で語られていました。以下、各ゲートの合格ラインを数字で置きます。</p>
+
+    <div class="def">
+      <h3><span class="mark">①</span> PMF ─ 「なくなったら困る」と言う人が、数えられるほどいるか</h3>
+      <p>市場に受け入れられているかを、気分ではなく数で確認する段階です。いちばん使われている判定が <strong>Sean Ellisテスト（40%ルール）</strong>。既存の利用者に「この商品が使えなくなったらどう感じますか」と聞き、「非常に失望する」が40%を超えたら達成、30%台なら近い、という基準です。回答は30件で方向性が見え、100件超で確信が持てるとされます。</p>
+      <div class="nums">
+        <div class="numcard"><div class="v">40%+</div><div class="k">「非常に失望する」の割合<br>＝PMF達成ライン</div></div>
+        <div class="numcard"><div class="v">50+</div><div class="k">NPS（推奨度）<br>達成可能性が高い目安</div></div>
+        <div class="numcard"><div class="v">横ばい</div><div class="k">リテンションカーブ<br>下がり止まれば定着</div></div>
+        <div class="numcard"><div class="v">30件〜</div><div class="k">必要な回答数<br>100件超で確度が上がる</div></div>
+      </div>
+      <p style="margin-top:14px">あわせて、口コミ・検索などオーガニック流入が増えることも達成後のサインとされます。定量（40%ルール・NPS・継続率）と定性（熱のこもった推薦）の両面で判断します。</p>
+      <div class="gate"><span class="gate-label">GATE → ②へ進める条件</span>「この人たちが、この理由で、この商品を手放したくないと言っている」を<strong>他人に見せられる形</strong>で持っていること。</div>
+    </div>
+
+    <div class="def">
+      <h3><span class="mark">②</span> ユニットエコノミクスの最適化 ─ 顧客1人あたりで黒字か</h3>
+      <p>顧客1人を取るのにいくらかかり（CAC）、その顧客が生涯いくら残すか（LTV）の比率です。一般的な目安は <strong>LTV ÷ CAC ≧ 3</strong>、4〜5あれば獲得にもっと投資してよい状態。ただしAIを使う事業では、この計算式をそのまま当てると危険だという指摘が2026年に増えています。</p>
+      <div class="nums">
+        <div class="numcard"><div class="v">3:1</div><div class="k">LTV:CAC の最低ライン<br>（5:1が望ましい）</div></div>
+        <div class="numcard"><div class="v">18ヶ月</div><div class="k">CAC回収期間の中央値<br>1年で14→18ヶ月に悪化</div></div>
+        <div class="numcard"><div class="v">52%</div><div class="k">LLMネイティブ企業の粗利率<br>従来SaaSは77〜81%</div></div>
+        <div class="numcard"><div class="v">30〜60%</div><div class="k">推論・API費が食う売上比率<br>従来SaaSは15〜30%</div></div>
+      </div>
+      <p style="margin-top:14px"><strong>ここが「AIを思い通りに使いこなしてマネタイズする」の核心です。</strong>AIは売上を伸ばす前に原価を書き換えます。AI企業の粗利率が40〜60%に沈むのは、使うほど増える変動費（推論コスト）を抱えるから。だから <code>AI関連売上 ÷ 推論コスト</code>（Inference Efficiency Ratio）のような指標で、AIが利益を生んでいるのか食っているのかを分けて見る必要があります。CACも Organic（自社SNS・紹介）／ Paid（広告）／ Blended（合計）に分けないと、実態を見誤ります。</p>
+      <div class="gate"><span class="gate-label">GATE → ③へ進める条件</span>1人増やしたときの<strong>増える売上と増えるコストの両方</strong>が、実測値で言えること。</div>
+    </div>
+
+    <div class="def">
+      <h3><span class="mark">③</span> スケーラビリティの担保 ─ 量が10倍になっても品質が落ちない構造か</h3>
+      <p>ここで潰すのが<strong>属人化</strong>、つまり「特定の人にしか中身と進み具合が分からない状態」です。対義語が仕組み化・標準化・マニュアル化。属人化を放置すると、その人の処理能力を超えて事業が伸びず、抜けた瞬間に知識ごと消えます。</p>
+      <ul class="tight">
+        <li><strong>集客〜成約だけを仕組みにしても足りない。</strong>コーチング業では「クライアントが成果を出す手順」まで型にして初めてスケーラビリティになる、という整理がされています。</li>
+        <li><strong>誰がやっても同じ品質</strong>が出る状態をつくる。特定の人に依存した組織は、その人が抜けると崩れます。</li>
+        <li>AI活用はここで効きます。標準化された手順があってはじめて、AIに任せて再現させられるからです。</li>
+      </ul>
+      <div class="gate"><span class="gate-label">GATE → ④へ進める条件</span>自分がいない日でも、決まった品質のものが出て、決まった判断基準で前に進むこと。</div>
+    </div>
+
+    <div class="def">
+      <h3><span class="mark">④</span> スケール ─ 燃料を入れて一気に伸ばす</h3>
+      <p>広告投下、人の採用、チャネル拡張など、投下量を増やして非連続に伸ばす段階。逆に言えば、<strong>①②③が揃うまでここに金と時間を入れてはいけない</strong>という意味の④です。PMFがないまま広げれば刺さらない発信を増やすだけ、②が未測定のまま広げれば赤字を正確に拡大し、③がないまま広げれば品質崩壊とクレームが先に来ます。</p>
+      <div class="gate"><span class="gate-label">判断</span>いま渡辺さんがここに入るのは<strong>時期尚早</strong>。判断材料が揃っていないため、投下したお金の良し悪しを評価できません。</div>
+    </div>
+  </section>
+
+  <!-- ============ 2. 当てはめ ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">Part 2</span>
+      <h2>いまの運用に当てはめる ── できている／できていない</h2>
+    </div>
+    <p style="color:var(--ink-2)">リポジトリにある <code>承認待ち.md</code>、<code>ルール/承認待ち同期.md</code>、<code>リサーチ/2026-09-13/summary.md</code>、<code>README.md</code> を根拠に判定しています。「未確認」は、できていないと断定したのではなく<strong>リポジトリ上に証拠がない</strong>という意味です。</p>
+
+    <div class="tbl-scroll">
+      <table>
+        <thead>
+          <tr><th>ステップ</th><th>できていること（根拠あり）</th><th>空いていること</th><th>判定</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>① PMF</strong></td>
+            <td>ターゲット像が文章で固まっている（拝金主義に窮屈さを感じ、自由な選択肢を求める人）。刺さる言葉も特定済み（エフィカシー／コンフォートゾーン／ブリーフシステム）。競合・参考発信者を毎週観測し、投稿ネタ13本を仮説として出す仕組みが動いている。<span class="src">リサーチ/2026-09-13/summary.md</span></td>
+            <td>商品そのもの（コーチングの内容・価格・期間）の定義がリポジトリに存在しない。既存クライアントに「なくなったら困るか」を聞いた記録がない。投稿の反応数値がどこにも残っていないため、13本の仮説が当たったか外れたかが永久に分からない。</td>
+            <td class="st"><span class="chip partial">半分</span></td>
+          </tr>
+          <tr>
+            <td><strong>② ユニット<br>エコノミクス</strong></td>
+            <td>AI運用のコスト構造自体は有利。ルーティンは月額固定に近く、投稿を1本増やしても追加コストがほぼ増えない＝限界費用が低い形になっている。ここは意図せず正解を引いている部分。</td>
+            <td>価格・成約率・継続月数・獲得経路のいずれも不明で、<strong>LTVもCACも計算できない</strong>。とくに最大の原価である「社長自身の時間」が原価として一度も数えられていない。AI事業の粗利を削るのは推論コストだが、渡辺さんの場合は<strong>時間</strong>がその位置にある。</td>
+            <td class="st"><span class="chip no">未着手</span></td>
+          </tr>
+          <tr>
+            <td><strong>③ スケーラ<br>ビリティ</strong></td>
+            <td><strong>ここが強い。</strong>正本を1つに決めた（承認待ち.md）／読む前にpull・書いたらpushの同期ルール／ID採番（AP-・Q-）／テンプレート化／状態の言葉を固定（承認待ち・保留・修正中・承認済み・見送り）／アーカイブ規則／二重管理の排除／機密を書かない安全ルール／当番制。これは属人化解消の教科書どおりの手順です。<span class="src">ルール/承認待ち同期.md</span></td>
+            <td>仕組みになっているのは<strong>承認とリサーチという周辺</strong>で、提供の中核（セッションの進め方、クライアントが成果を出す手順）が未文書化。また承認が社長1人に集中する設計のため、件数が増えると<strong>社長がボトルネックになる上限</strong>が構造に埋まっている。品質チェック（制作支援センターのチェック結果）の合否基準も自由記述のまま。</td>
+            <td class="st"><span class="chip ok">進行中</span></td>
+          </tr>
+          <tr>
+            <td><strong>④ スケール</strong></td>
+            <td>複数チャネルの同時運用と時間割（12:00アメブロ／19:30 Instagram・Facebook／21:00 note）が既に回っており、広げるときの土台にはなる。</td>
+            <td>いま広告や量産に踏み込むと、②が未測定のまま支出だけが増える。<strong>着手しないことが正しい判断</strong>の段階。</td>
+            <td class="st"><span class="chip hold">保留が正解</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <span class="ttl">いちばん大事な切り分け：発信のPMFと、商品のPMFは別物</span>
+      いまリポジトリにある資産は、ほぼ全部が<strong>発信のPMF</strong>（どんな言葉が読まれるか）に向いています。けれど①が問うているのは<strong>商品のPMF</strong>（お金を払った人が手放したくないと言うか）です。この2つは連動しません。バズる発信を持ちながら商品が売れない人も、無風の発信で高継続の商品を持つ人もいます。いまの運用は前者だけを測れる形になっているので、後者を測る線を1本引くのが最優先です。
+    </div>
+  </section>
+
+  <!-- ============ 3. 導線 ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">Part 3</span>
+      <h2>導線のどこで数字が消えているか</h2>
+    </div>
+    <p style="color:var(--ink-2)">SNSからコーチング契約までの各段です。赤い「？」は、いまリポジトリ上でも運用上でも記録されていない箇所。ここが埋まらない限り、②の計算は一生始められません。</p>
+
+    <div class="funnel">
+      <div class="fstep"><div class="track f1"><span class="lbl">① 投稿（X / Instagram / アメブロ / note）</span><span class="val known">実施中</span></div></div>
+      <div class="fstep"><div class="track f2"><span class="lbl">② 反応（表示・保存・プロフィール遷移）</span><span class="val unknown">？ 未記録</span></div></div>
+      <div class="fstep"><div class="track f3"><span class="lbl">③ 公式LINE登録（リスト獲得）</span><span class="val unknown">？ 未記録</span></div></div>
+      <div class="fstep"><div class="track f4"><span class="lbl">④ 個別面談の申込・実施</span><span class="val unknown">？ 未記録</span></div></div>
+      <div class="fstep"><div class="track f5"><span class="lbl">⑤ 成約・単価・継続月数</span><span class="val unknown">？ 未記録</span></div></div>
+    </div>
+    <p class="funnel-note">※ ①だけが実行され、②〜⑤が記録されていない状態です。承認待ちの仕組みは「出していいか」を管理するもので、「出した結果どうだったか」は管理していません。ここに同じ精度の仕組みをもう1本つくるのが、次の打ち手になります。</p>
+  </section>
+
+  <!-- ============ 4. 計測シート ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">Part 4</span>
+      <h2>②を始めるために、まず埋める数字</h2>
+    </div>
+    <p style="color:var(--ink-2)">この表が埋まった瞬間に、②は「できていない」から「できている」に変わります。逆に言うと、必要なのはこれだけです。まず概算でよいので入れてください。</p>
+
+    <div class="tbl-scroll">
+      <table class="sheet">
+        <thead><tr><th>項目</th><th>取り方</th><th>いまの値</th></tr></thead>
+        <tbody>
+          <tr><td>商品の単価</td><td>コーチングの契約金額（1件あたり）</td><td class="blank">未記入</td></tr>
+          <tr><td>提供期間・継続月数</td><td>平均して何ヶ月続くか</td><td class="blank">未記入</td></tr>
+          <tr><td>月あたりの提供時間</td><td>セッション＋準備＋連絡の合計時間</td><td class="blank">未記入</td></tr>
+          <tr><td>新規顧客数（月）</td><td>その月に契約した人数</td><td class="blank">未記入</td></tr>
+          <tr><td>面談数・成約率</td><td>面談実施数と、そのうち成約した割合</td><td class="blank">未記入</td></tr>
+          <tr><td>リスト増加数（月）</td><td>公式LINEの新規登録数</td><td class="blank">未記入</td></tr>
+          <tr><td>ツール・AI月額</td><td>Claude・各種SaaSの合計</td><td class="blank">未記入</td></tr>
+          <tr><td>発信にかけた時間（月）</td><td>リサーチ・制作・承認・投稿の合計時間</td><td class="blank">未記入</td></tr>
+          <tr><td>自分の時間単価</td><td>1時間をいくらと置くか（自分で決める）</td><td class="blank">未記入</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:24px">埋まったら、この4本を計算する</h3>
+    <ul class="tight">
+      <li><strong>LTV</strong> ＝ <code class="formula" style="display:inline-block; white-space:normal">単価 × 継続月数 × 粗利率</code></li>
+      <li><strong>CAC</strong> ＝ <code class="formula" style="display:inline-block; white-space:normal">（広告費 ＋ 発信時間 × 自分の時間単価）÷ 新規顧客数</code>　※広告ゼロでもOrganic CACは発生します</li>
+      <li><strong>LTV ÷ CAC</strong>　→ 3以上が最低ライン、5以上なら投下を増やしてよい</li>
+      <li><strong>1時間あたり粗利</strong> ＝ <code class="formula" style="display:inline-block; white-space:normal">月の粗利 ÷ 月の総投下時間</code>　→ これが渡辺さんにとっての実質的な粗利率</li>
+    </ul>
+    <div class="callout" style="background:var(--amber-soft)">
+      <span class="ttl" style="color:var(--amber)">AI事業として見たときの注意</span>
+      AI企業の粗利率が従来SaaSの77〜81%から52%前後まで落ちるのは、使うほど増える推論コストのせいです。渡辺さんの構成ではAPI費用は小さく、<strong>その位置にあるのは「社長の時間」</strong>。AIで投稿本数を2倍にしても、承認・確認・修正の時間が2倍になるなら、それはAI企業が推論コストで粗利を溶かしているのと同じ形です。増やすべきは投稿数ではなく、<strong>1時間あたり粗利</strong>だと考えてください。
+    </div>
+  </section>
+
+  <!-- ============ 5. プラン ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">Part 5</span>
+      <h2>90日の順番</h2>
+    </div>
+    <div class="plan">
+      <div class="phase">
+        <span class="when">DAY 1 – 30</span>
+        <h3>①の後半を埋める ── 商品を定義し、客に聞く</h3>
+        <ul class="tight">
+          <li><strong>商品を1枚に書く。</strong><code>商品/商品定義.md</code> を作り、誰に・何を・いくらで・何ヶ月・何を約束するかを書く。いま口の中にしかないものを外に出す作業です。</li>
+          <li><strong>40%質問を送る。</strong>現在と過去のクライアント5〜10人に「このコーチングが受けられなくなったらどう感じますか（非常に失望する／やや／失望しない）」＋「いちばんの価値は何でしたか」の2問。30件が方向性の目安なので、まず届く人全員に。</li>
+          <li><strong>投稿の反応を記録し始める。</strong>週次リサーチに <code>成果.md</code> を1枚足し、先週の投稿の表示数・保存数・LINE登録数を書く。リサーチ→投稿の片道を、往復に変える。</li>
+        </ul>
+      </div>
+      <div class="phase">
+        <span class="when">DAY 31 – 60</span>
+        <h3>②を立ち上げる ── 数字を入れ、時間を原価にする</h3>
+        <ul class="tight">
+          <li>Part 4の表を埋め、LTV／CAC／LTV÷CAC／1時間あたり粗利を出す。<code>経営/数字.md</code> として承認待ちと同じルール（pull→書く→push）で管理する。</li>
+          <li>導線の各段（反応→LINE→面談→成約）に数を入れる。どこで落ちているかが分かって初めて、打ち手が1つに絞れます。</li>
+          <li>発信に使った時間を毎週記録する。AIに任せて<strong>減った時間</strong>を可視化するのが、この事業でのAI投資対効果の測り方です。</li>
+        </ul>
+      </div>
+      <div class="phase">
+        <span class="when">DAY 61 – 90</span>
+        <h3>③の本丸へ ── 提供の型と、社長を外す線引き</h3>
+        <ul class="tight">
+          <li><strong>セッションの手順書を作る。</strong>初回・中間・最終で何をどの順に扱うか。「クライアントが成果を出す型」まで文書化して初めてスケーラビリティです。</li>
+          <li><strong>社長が見なくていい範囲を決める。</strong>いまは全件が承認待ちに集まる設計。「この条件を満たす投稿は承認不要」という基準を1行決めるだけで、承認の上限が外れます。</li>
+          <li>①②が数字で揃っていたら、④を<strong>小さく1回だけ</strong>試す（1チャネルに少額の広告、または少人数グループ提供）。揃っていなければ、④はさらに次の90日へ送る。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 6. 今週 ============ -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">Part 6</span>
+      <h2>今週やる3つ</h2>
+    </div>
+    <div class="week">
+      <div class="task"><span class="n">1</span><div class="body"><span class="t">商品を1枚に書く</span><span class="d">誰に・何を・いくらで・何ヶ月・何を約束するか。<code>商品/商品定義.md</code> として、承認待ちと同じ形でリポジトリに置く。所要30分。</span></div></div>
+      <div class="task"><span class="n">2</span><div class="body"><span class="t">40%質問を5人に送る</span><span class="d">2問だけ。返ってきた言葉は、そのまま次の投稿のフックになります（①の検証と発信ネタが同時に手に入る）。</span></div></div>
+      <div class="task"><span class="n">3</span><div class="body"><span class="t">週次リサーチに「先週の反応」欄を足す</span><span class="d"><code>リサーチ/YYYY-MM-DD/summary.md</code> の冒頭に1セクション追加するだけ。次週からリサーチが仮説検証になります。</span></div></div>
+    </div>
+    <p style="margin-top:18px; color:var(--ink-2)">この3つが終われば、①は「半分」から「検証中」に、②は「未着手」から「計算できる状態」に変わります。③はすでに走っているので、手を止める必要はありません。</p>
+  </section>
+
+  <footer>
+    <span class="eyebrow">出典</span>
+    <ul>
+      <li><a href="https://www.reforge.com/guides/measure-and-improve-product-market-fit">Reforge — Measure and improve product/market fit with the 40% test</a></li>
+      <li><a href="https://www.koji.so/docs/sean-ellis-test-product-market-fit">Sean Ellis Test: The 40% Rule for Product-Market Fit (2026 Guide)</a></li>
+      <li><a href="https://www.bizhack.jp/pmf/">PMFとは？達成の判断基準と測定方法</a> ／ <a href="https://sinmido.com/news/p7080/">PMF完全ガイド（2026年版）</a></li>
+      <li><a href="https://ltvcacbook.com/blog/unit-economics-ai-startups">Unit Economics for AI Startups: Why Standard LTV:CAC Fails (2026)</a></li>
+      <li><a href="https://theremarkableagency.com/blog/inference-cost-cac-payback-ai-saas/">Inference Cost Just Broke Your CAC Payback Math</a> ／ <a href="https://www.thesaascfo.com/how-to-calculate-the-inference-efficiency-ratio/">The SaaS CFO — Inference Efficiency Ratio</a></li>
+      <li><a href="https://www.digitalapplied.com/blog/saas-unit-economics-2026-cac-ltv-payback-reference">SaaS Unit Economics 2026: CAC, LTV & Payback Reference</a> ／ <a href="https://www.hubspot.jp/products/service/ltv-cac">HubSpot — LTV／CACとは</a></li>
+      <li><a href="https://asana.com/ja/resources/individualization-of-work">Asana — 属人化とは？標準化による5つの解消ステップ</a> ／ <a href="https://jsmaho.com/couseler-sikumi/">コーチング・カウンセラーに特化した3つの仕組み化</a></li>
+      <li><a href="https://compass.vision/scale/">Globis Capital Partners — スタートアップの成長戦略：スケールとは</a></li>
+    </ul>
+    <p style="margin-top:16px">判定は 2026-09-20 時点のリポジトリ（README.md／承認待ち.md／ルール／リサーチ）に基づく。「未確認」は証拠が見つからなかった項目で、実際には運用されている可能性があります。</p>
+  </footer>
+</div>
