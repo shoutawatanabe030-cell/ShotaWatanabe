@@ -1,0 +1,358 @@
+<title>愛のパートナーシップ プロフィール案</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+:root{
+  --bg:#f7f4f5; --surface:#ffffff; --ink:#2a2127; --muted:#6e6168; --line:#e5dce0;
+  --accent:#9c3d5c; --accent-soft:#f4e3e9; --ok:#2f7a55; --ok-soft:#e3f1e9; --warn:#9a6212; --warn-soft:#f8ecd8;
+  --code:#f2edef;
+  --serif:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --sans:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#17131a; --surface:#211b22; --ink:#f0e8ec; --muted:#b3a4ac; --line:#3a3039;
+    --accent:#e28aa6; --accent-soft:#3b2530; --ok:#7fcfa3; --ok-soft:#1f3329; --warn:#e8b56a; --warn-soft:#3a2d18;
+    --code:#2a222b;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#17131a; --surface:#211b22; --ink:#f0e8ec; --muted:#b3a4ac; --line:#3a3039;
+  --accent:#e28aa6; --accent-soft:#3b2530; --ok:#7fcfa3; --ok-soft:#1f3329; --warn:#e8b56a; --warn-soft:#3a2d18;
+  --code:#2a222b;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.85;padding-inline:16px;padding-block:32px 64px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:40px}
+h1,h2,h3{font-family:var(--serif);text-wrap:balance;line-height:1.4;margin:0}
+h1{font-size:clamp(24px,5vw,34px)}
+h2{font-size:22px}
+h3{font-size:16px;font-family:var(--sans);font-weight:700}
+p{margin:0}
+a{color:var(--accent)}
+.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:700}
+.meta{color:var(--muted);font-size:13px}
+header{display:flex;flex-direction:column;gap:12px;border-bottom:1px solid var(--line);padding-bottom:28px}
+.lead{max-width:62ch}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.summary div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.summary b{display:block;font-size:13px;color:var(--accent);margin-bottom:4px}
+.summary span{font-size:14px}
+nav.toc{display:flex;flex-wrap:wrap;gap:8px}
+nav.toc a{font-size:13px;text-decoration:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:4px 12px;border-radius:999px}
+nav.toc a:hover,nav.toc a:focus-visible{border-color:var(--accent);color:var(--accent)}
+section{display:flex;flex-direction:column;gap:16px;scroll-margin-top:16px}
+.sec-head{display:flex;flex-direction:column;gap:4px}
+.spec{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;padding:2px 10px;border-radius:999px;background:var(--code);color:var(--muted);white-space:nowrap}
+.chip.must{background:var(--accent-soft);color:var(--accent);font-weight:700}
+.proposal{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.proposal.rec{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;padding:1px 8px;border-radius:4px;background:var(--accent);color:var(--surface);margin-right:8px;vertical-align:2px}
+.tag.alt{background:var(--muted)}
+.big{font-size:20px;font-weight:700}
+.why{color:var(--muted);font-size:14px}
+ul{margin:0;padding-left:1.3em}
+li+li{margin-top:4px}
+.copybox{position:relative;background:var(--code);border-radius:10px;padding:16px;font-size:14px;line-height:1.9;white-space:pre-wrap;word-break:break-word;margin:0;font-family:var(--sans)}
+.copybox mark{background:var(--warn-soft);color:var(--warn);padding:0 2px;border-radius:3px}
+.copyrow{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+button.copy{font:inherit;font-size:13px;border:1px solid var(--accent);background:transparent;color:var(--accent);padding:4px 14px;border-radius:999px;cursor:pointer}
+button.copy:hover{background:var(--accent-soft)}
+button.copy:focus-visible,nav.toc a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.count{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.04em;background:var(--code)}
+tr:last-child td{border-bottom:none}
+td.n{font-variant-numeric:tabular-nums;color:var(--muted);width:3em}
+.kw{display:flex;flex-wrap:wrap;gap:8px}
+.kw span{background:var(--surface);border:1px solid var(--line);padding:3px 12px;border-radius:6px;font-size:14px}
+.kw span.main{border-color:var(--accent);color:var(--accent);font-weight:700}
+.note{background:var(--warn-soft);color:var(--ink);border-radius:10px;padding:12px 16px;font-size:14px}
+.note b{color:var(--warn)}
+.banner{display:flex;flex-direction:column;gap:8px}
+.banner svg{width:100%;height:auto;max-width:100%;display:block}
+.check{list-style:none;padding:0;display:flex;flex-direction:column;gap:6px}
+.check li{display:flex;gap:10px;align-items:flex-start;margin:0}
+.check input{margin-top:7px;accent-color:var(--accent);width:16px;height:16px;flex:none}
+.check label{cursor:pointer}
+.sources{font-size:13px;color:var(--muted)}
+.sources ul{padding-left:1.2em}
+code{font-family:var(--mono);font-size:13px;background:var(--code);padding:1px 6px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">SEO担当 提案書 ／ YouTubeサブチャンネル</div>
+  <h1>「愛のパートナーシップの再構築チャンネル」<br>プロフィール記入案</h1>
+  <p class="meta">作成日 2026-09-23 ・ 対象 @love_partnership ・ 提出先 渡辺笙太（SHOTA）さま</p>
+  <p class="lead">新しく作ったサブチャンネルのプロフィールを、YouTube Studio の項目順にまとめた記入案です。各項目に「そのまま貼れる案」と「そうする理由」を付けています。<mark style="background:var(--warn-soft);color:var(--warn);padding:0 4px;border-radius:3px">黄色の【　】</mark>は、こちらで分からなかったところです。埋めてからお使いください。</p>
+  <div class="summary">
+    <div><b>いちばん大事なこと</b><span>説明文の最初の2行に「夫婦関係」「恋愛」「パートナーシップ」「再構築」を入れる。検索結果に出るのは冒頭の約150字だけです。</span></div>
+    <div><b>メインとのつながり</b><span>リンクと説明文でメインチャンネルと行き来できるようにし、登録者を分け合う導線をつくります。</span></div>
+    <div><b>今日やること</b><span>説明文・キーワード・リンク・連絡先の4つ。画像（バナーなど）は後からでも大丈夫です。</span></div>
+  </div>
+  <nav class="toc" aria-label="目次">
+    <a href="#name">チャンネル名</a><a href="#handle">ハンドル</a><a href="#desc">説明文</a><a href="#keywords">キーワード</a><a href="#links">リンク</a><a href="#contact">連絡先</a><a href="#images">画像3点</a><a href="#home">ホームタブ</a><a href="#basic">基本設定</a><a href="#checklist">チェックリスト</a>
+  </nav>
+</header>
+
+<!-- 1 チャンネル名 -->
+<section id="name">
+  <div class="sec-head">
+    <h2>チャンネル名</h2>
+    <div class="spec"><span class="chip must">最優先</span><span class="chip">上限100字</span><span class="chip">スマホで見やすいのは25字くらいまで</span><span class="chip">14日のうち2回まで変更可</span></div>
+  </div>
+  <div class="proposal rec">
+    <p><span class="tag">おすすめ</span><span class="big">愛のパートナーシップ再構築｜夫婦関係・恋愛</span></p>
+    <p class="count">21字</p>
+    <p class="why">今の名前は雰囲気がとても良いです。ただ「夫婦関係」や「恋愛」で探している人に見つけてもらえるよう、実際に検索される言葉を名前の後ろに足しました。「チャンネル」は検索では意味がないので外しています。</p>
+  </div>
+  <div class="proposal">
+    <p><span class="tag alt">別の案</span><span class="big">愛のパートナーシップの再構築チャンネル</span>（今のまま）</p>
+    <p class="count">19字</p>
+    <p class="why">ブランドとしての見え方を大切にしたい場合は、このままでも問題ありません。その場合は、下の説明文とキーワードで検索対策を補います。</p>
+  </div>
+</section>
+
+<!-- 2 ハンドル -->
+<section id="handle">
+  <div class="sec-head">
+    <h2>ハンドル</h2>
+    <div class="spec"><span class="chip">3〜30字</span><span class="chip">14日のうち2回まで変更可</span><span class="chip">URLになる</span></div>
+  </div>
+  <div class="proposal rec">
+    <p><span class="tag">おすすめ</span><span class="big">@love_partnership</span>（今のまま）</p>
+    <p class="why">短くて読みやすく、チャンネル名とも合っています。URL（youtube.com/@love_partnership）にもなるため、名刺・LINE・メインの概要欄などに貼ったあとは変えない方が安全です。</p>
+  </div>
+</section>
+
+<!-- 3 説明文 -->
+<section id="desc">
+  <div class="sec-head">
+    <h2>説明（チャンネル概要）</h2>
+    <div class="spec"><span class="chip must">最優先</span><span class="chip">上限1,000字</span><span class="chip">検索に出るのは冒頭の約150字</span></div>
+  </div>
+  <p>最初の2行で「誰の・どんな悩みを・どう解決するのか」と主なキーワードを伝え、そのあとに対象、内容、更新日、運営者、導線の順に書きました。YouTubeは説明文を読んでチャンネルのジャンルを判断するため、500字前後あると伝わりやすくなります。</p>
+  <div class="copyrow">
+    <span class="count">523字 ／ 1,000字</span>
+    <button class="copy" type="button" data-target="descText" id="copyDesc">説明文をコピー</button>
+  </div>
+<pre class="copybox" id="descText">夫婦関係・恋愛のすれ違いを、我慢や根性論ではなく「脳と心の仕組み」から見直し、愛のパートナーシップを再構築するチャンネルです。
+「会話が減った」「喧嘩のたびに同じパターンになる」「もう一度やり直したい」――そんな悩みに、認知科学ベースのコーチングで向き合います。
+
+■こんな方におすすめ
+・夫婦仲を改善したい／すれ違いを修復したい
+・喧嘩や無視が続き、関係が冷えてしまった
+・離婚が頭をよぎるけれど、やり直す道も探したい
+・パートナーに本音を伝えられない、伝わらない
+・同棲中・結婚前で、長く続く関係を築きたい
+
+■発信内容
+・夫婦関係を再構築するためのステップ
+・すれ違いを生む「思い込み」の外し方
+・感情的にならずに伝えるコミュニケーション
+・視聴者のお悩み相談への回答
+
+■更新
+毎週<mark>【曜日】</mark><mark>【時刻】</mark>に新しい動画を公開します。
+
+■運営
+認知科学ベースのコーチ・渡辺笙太（SHOTA）のサブチャンネルです。
+自分らしく自由に生きるためのメインチャンネルはこちら → @<mark>【メインのハンドル】</mark>
+
+■個別相談・お問い合わせ
+公式LINEから受け付けています（上のリンク欄をご覧ください）。
+お仕事のご依頼は「チャンネル情報」内のメールアドレスへ。</pre>
+  <div class="note"><b>確認してほしいこと：</b>写真はおふたりで写っているので、発信者がSHOTAさんおひとりか、パートナーの方と一緒かによって「■運営」の書き方が変わります。おふたりで出る場合は、お名前（またはニックネーム）を並べて書くのがおすすめです。</div>
+</section>
+
+<!-- 4 キーワード -->
+<section id="keywords">
+  <div class="sec-head">
+    <h2>チャンネルキーワード</h2>
+    <div class="spec"><span class="chip">YouTube Studio → 設定 → チャンネル → 基本情報</span><span class="chip">視聴者には見えない</span></div>
+  </div>
+  <p>YouTubeに「このチャンネルは何のジャンルか」を伝えるための言葉です。たくさん入れても効果は上がらないので、実際に検索されている言葉を10個前後にしぼりました。<b>太字の枠</b>が主な言葉です。</p>
+  <div class="kw" aria-label="キーワード一覧">
+    <span class="main">夫婦関係</span><span class="main">パートナーシップ</span><span class="main">夫婦 再構築</span><span class="main">恋愛</span>
+    <span>夫婦仲 改善</span><span>夫婦喧嘩</span><span>すれ違い</span><span>離婚回避</span><span>コミュニケーション</span><span>カップル</span><span>認知科学</span><span>コーチング</span>
+  </div>
+  <div class="copyrow">
+    <span class="count">入力欄用（2語の言葉は " " で囲んでいます）</span>
+    <button class="copy" type="button" data-target="kwText" id="copyKw">キーワードをコピー</button>
+  </div>
+<pre class="copybox" id="kwText">夫婦関係 パートナーシップ "夫婦 再構築" 恋愛 "夫婦仲 改善" 夫婦喧嘩 すれ違い 離婚回避 コミュニケーション カップル 認知科学 コーチング 愛のパートナーシップ</pre>
+  <div class="note"><b>入れない方がよい言葉：</b>「セックスレス」「不倫」はよく検索されますが、チャンネル全体の言葉にすると、広告が付きにくくなったり年齢制限の対象として見られたりするおそれがあります。扱うときは動画ごとのタイトルで使ってください。</div>
+</section>
+
+<!-- 5 リンク -->
+<section id="links">
+  <div class="sec-head">
+    <h2>リンク</h2>
+    <div class="spec"><span class="chip must">重要</span><span class="chip">最大14個</span><span class="chip">1つ目がチャンネル上部に表示される</span></div>
+  </div>
+  <p>チャンネルのいちばん上に見えるのは1つ目のリンクだけです（ほかは「他◯件のリンク」に隠れます）。サブチャンネルの目的に合わせて、<b>1つ目は相談の入口</b>にしました。</p>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>順番</th><th>表示名（タイトル欄）</th><th>URL</th><th>理由</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td>【無料】パートナーシップ相談はLINEから</td><td><mark style="background:var(--warn-soft);color:var(--warn)">【公式LINEのURL】</mark></td><td>見ている人が次にとる行動をひとつにしぼる</td></tr>
+      <tr><td class="n">2</td><td>メインチャンネル（SHOTA）</td><td>youtube.com/@<mark style="background:var(--warn-soft);color:var(--warn)">【メインのハンドル】</mark></td><td>サブとメインで登録者を行き来させる</td></tr>
+      <tr><td class="n">3</td><td>note｜パートナーシップのコラム</td><td><mark style="background:var(--warn-soft);color:var(--warn)">【noteのURL】</mark></td><td>動画を見たあとに文章で深く読める場所</td></tr>
+      <tr><td class="n">4</td><td>Instagram</td><td><mark style="background:var(--warn-soft);color:var(--warn)">【InstagramのURL】</mark></td><td>リールで新しい人に知ってもらう入口</td></tr>
+      <tr><td class="n">5</td><td>アメブロ</td><td><mark style="background:var(--warn-soft);color:var(--warn)">【アメブロのURL】</mark></td><td>毎日の発信とつなげる</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="why">表示名は「何があって、押すと何が得られるか」が分かる言葉にしています。「LINE」とだけ書くより、押してもらいやすくなります。</p>
+</section>
+
+<!-- 6 連絡先 -->
+<section id="contact">
+  <div class="sec-head">
+    <h2>連絡先（メールアドレス）</h2>
+    <div class="spec"><span class="chip">チャンネル情報に表示</span><span class="chip">お仕事の依頼用</span></div>
+  </div>
+  <div class="proposal">
+    <p><span class="big"><mark style="background:var(--warn-soft);color:var(--warn);padding:0 4px">【お仕事用のメールアドレス】</mark></span></p>
+    <p class="why">取材やコラボの相談の窓口になります。迷惑メールが増えることがあるので、個人のGmailではなく<b>お仕事用のアドレス</b>をおすすめします。お悩み相談は公式LINEへ案内しているので、メールは「お仕事のご依頼」専用で大丈夫です。</p>
+  </div>
+</section>
+
+<!-- 7 画像 -->
+<section id="images">
+  <div class="sec-head">
+    <h2>画像3点（プロフィール写真・バナー・透かし）</h2>
+    <div class="spec"><span class="chip">カスタマイズ → ブランディング</span></div>
+  </div>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>項目</th><th>サイズ</th><th>提案</th></tr></thead>
+    <tbody>
+      <tr><td><b>プロフィール写真</b></td><td>800×800px<br>丸く切り取られる<br>4MBまで</td><td>今の写真は雰囲気が伝わって良いです。ただ丸の中では顔が小さく、検索結果やコメント欄（とても小さく表示されます）では何の写真か分かりにくくなります。<b>おふたりの顔の部分を大きめに切り抜く</b>と、小さくてもはっきり見えます。</td></tr>
+      <tr><td><b>バナー</b></td><td>2560×1440px<br>6MBまで</td><td>文字は中央の<b>1235×338px</b>の中に入れてください。スマホではそこしか確実に見えません。入れる文字の案：<br>「夫婦・恋愛のすれ違いを、脳と心の仕組みからほどく」＋「毎週<mark style="background:var(--warn-soft);color:var(--warn)">【曜日】</mark>更新」</td></tr>
+      <tr><td><b>動画の透かし</b></td><td>150×150px</td><td>動画の右下に出る「登録ボタン」です。プロフィール写真と同じ画像か、白いハートと「登録」の文字など、小さくても分かるものにしてください。</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="banner">
+    <h3>バナーの見え方（縮尺どおり）</h3>
+    <svg viewBox="0 0 2560 1440" role="img" aria-label="2560×1440のバナーのうち、テレビでは全体、パソコンでは中央の横長の帯、スマホではさらに狭い中央部分、文字を入れる安全な範囲は中央の1235×338が表示されることを示す図">
+      <rect x="0" y="0" width="2560" height="1440" fill="var(--code)" stroke="var(--line)" stroke-width="6"/>
+      <rect x="0" y="508" width="2560" height="423" fill="var(--accent-soft)"/>
+      <rect x="507" y="508" width="1546" height="423" fill="none" stroke="var(--muted)" stroke-width="6" stroke-dasharray="24 16"/>
+      <rect x="662" y="551" width="1235" height="338" fill="var(--surface)" stroke="var(--accent)" stroke-width="10"/>
+      <text x="1280" y="740" text-anchor="middle" font-size="80" font-weight="700" fill="var(--accent)" font-family="Zen Kaku Gothic New, sans-serif">文字はここ 1235×338</text>
+      <text x="60" y="120" font-size="72" fill="var(--muted)" font-family="Zen Kaku Gothic New, sans-serif">テレビ：全体 2560×1440</text>
+      <text x="60" y="490" font-size="64" fill="var(--muted)" font-family="Zen Kaku Gothic New, sans-serif">パソコン：2560×423</text>
+      <text x="520" y="1010" font-size="64" fill="var(--muted)" font-family="Zen Kaku Gothic New, sans-serif">スマホ：1546×423（点線）</text>
+    </svg>
+  </div>
+</section>
+
+<!-- 8 ホームタブ -->
+<section id="home">
+  <div class="sec-head">
+    <h2>ホームタブの並べ方</h2>
+    <div class="spec"><span class="chip">カスタマイズ → レイアウト</span><span class="chip">動画が3〜5本そろってから</span></div>
+  </div>
+  <ul>
+    <li><b>まだ登録していない人向けの動画：</b>「このチャンネルで何が分かるか」を1分ほどで話す紹介動画。まだ無ければ、いちばん自信のある1本を置いてください。</li>
+    <li><b>登録している人向けの動画：</b>いちばん新しい動画。</li>
+    <li><b>セクション（上から順に）：</b>「はじめての方へ（再構築の基本）」→「すれ違い・喧嘩のお悩み」→「お悩み相談に答えます」→「ショート動画」。悩みごとに再生リストを分けると、続けて見てもらいやすくなります。</li>
+    <li><b>おすすめチャンネル：</b>メインチャンネルを登録。メインの側でもこのサブチャンネルを登録すると、お互いに紹介し合えます。</li>
+  </ul>
+</section>
+
+<!-- 9 基本設定 -->
+<section id="basic">
+  <div class="sec-head">
+    <h2>そのほかの基本設定</h2>
+  </div>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>項目</th><th>場所</th><th>設定する値</th></tr></thead>
+    <tbody>
+      <tr><td>国／地域</td><td>設定 → チャンネル → 基本情報</td><td>日本</td></tr>
+      <tr><td>動画の言語（初期値）</td><td>設定 → アップロード動画のデフォルト設定</td><td>日本語</td></tr>
+      <tr><td>子ども向け</td><td>設定 → チャンネル → 詳細設定</td><td>「いいえ、子ども向けではありません」<br><span class="why">大人の恋愛・夫婦の内容のため。子ども向けにするとコメントなどが使えなくなります。</span></td></tr>
+      <tr><td>説明文の初期値</td><td>設定 → アップロード動画のデフォルト設定</td><td>動画の概要欄の下の方に毎回入れる文（LINE・メインへのリンク）を登録しておくと、入れ忘れを防げます。</td></tr>
+      <tr><td>多言語の翻訳</td><td>チャンネルの説明 → 言語を追加</td><td>今は不要です。日本の視聴者に集中します。</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- 10 チェックリスト -->
+<section id="checklist">
+  <div class="sec-head">
+    <h2>設定チェックリスト</h2>
+    <p class="meta">チェックはこのブラウザにだけ保存されます。</p>
+  </div>
+  <ul class="check" id="checkList">
+    <li><input type="checkbox" id="c1"><label for="c1">【　】の中身（更新日時・メインのハンドル・各URL・メール）を決めた</label></li>
+    <li><input type="checkbox" id="c2"><label for="c2">チャンネル名を決めて入れた</label></li>
+    <li><input type="checkbox" id="c3"><label for="c3">説明文を貼った</label></li>
+    <li><input type="checkbox" id="c4"><label for="c4">キーワードを入れた</label></li>
+    <li><input type="checkbox" id="c5"><label for="c5">リンクを入れた（1つ目は公式LINE）</label></li>
+    <li><input type="checkbox" id="c6"><label for="c6">お仕事用のメールアドレスを入れた</label></li>
+    <li><input type="checkbox" id="c7"><label for="c7">プロフィール写真を顔が大きく見えるよう切り直した</label></li>
+    <li><input type="checkbox" id="c8"><label for="c8">バナーと透かしを入れた</label></li>
+    <li><input type="checkbox" id="c9"><label for="c9">「子ども向けではない」を選んだ</label></li>
+    <li><input type="checkbox" id="c10"><label for="c10">メインチャンネルの概要欄とリンクにサブチャンネルを追加した</label></li>
+  </ul>
+</section>
+
+<footer class="sources">
+  <h3>調べた資料</h3>
+  <ul>
+    <li><a href="https://support.google.com/youtube/answer/2657964?hl=ja" target="_blank" rel="noopener">YouTube ヘルプ：チャンネルのプロフィールを管理する</a>（名前・ハンドルの変更回数、リンク数）</li>
+    <li><a href="https://support.google.com/youtube/answer/2976814?hl=ja" target="_blank" rel="noopener">YouTube ヘルプ：チャンネル設定の管理</a></li>
+    <li><a href="https://postlen.app/en/blog/youtube-character-limits" target="_blank" rel="noopener">YouTube Character Limits 2026</a>（名前100字・ハンドル30字・説明1,000字）</li>
+    <li><a href="https://vidthumb.co/blog/youtube-banner-size" target="_blank" rel="noopener">YouTube Banner Size: 2560x1440 and the 2026 Safe-Area Guide</a></li>
+    <li><a href="https://momenth.jp/content/youtube-channel-overview" target="_blank" rel="noopener">MOMENTH：YouTubeのチャンネル概要欄とは？</a></li>
+    <li><a href="https://behealthy.co.jp/column/youtube/youtube-description-seo/" target="_blank" rel="noopener">ビーヘルシー：YouTube概要欄の書き方完全攻略（2026年）</a></li>
+    <li><a href="https://youtubebiz.jp/channel-keyword/" target="_blank" rel="noopener">YouTubeのチャンネルキーワードとは？例・何個・設定方法</a></li>
+    <li><a href="https://counselor.excite.co.jp/media/002/" target="_blank" rel="noopener">エキサイトお悩み相談室：夫婦の再構築とは？</a>（悩みの言葉づかいの参考）</li>
+  </ul>
+</footer>
+</div>
+
+<script>
+document.querySelectorAll('button.copy').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var el=document.getElementById(btn.dataset.target);
+    var text=el.innerText;
+    var label=btn.textContent;
+    function done(msg){btn.textContent=msg;setTimeout(function(){btn.textContent=label},1800)}
+    function fallback(){
+      var r=document.createRange();r.selectNodeContents(el);
+      var s=window.getSelection();s.removeAllRanges();s.addRange(r);
+      done('選択しました。コピーしてください');
+    }
+    try{
+      navigator.clipboard.writeText(text).then(function(){done('コピーしました')},fallback);
+    }catch(e){fallback()}
+  });
+});
+(function(){
+  var KEY='lp-profile-checklist';
+  var saved={};
+  try{saved=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){}
+  document.querySelectorAll('#checkList input').forEach(function(cb){
+    cb.checked=!!saved[cb.id];
+    cb.addEventListener('change',function(){
+      saved[cb.id]=cb.checked;
+      try{localStorage.setItem(KEY,JSON.stringify(saved))}catch(e){}
+    });
+  });
+})();
+</script>
