@@ -1,0 +1,399 @@
+<title>サブチャンネル登録導線</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+:root{
+  --bg:#f7f4f5; --surface:#ffffff; --ink:#2a2127; --muted:#6e6168; --line:#e5dce0;
+  --accent:#9c3d5c; --accent-soft:#f4e3e9; --warn:#9a6212; --warn-soft:#f8ecd8; --code:#f2edef;
+  --serif:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --sans:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#17131a; --surface:#211b22; --ink:#f0e8ec; --muted:#b3a4ac; --line:#3a3039;
+    --accent:#e28aa6; --accent-soft:#3b2530; --warn:#e8b56a; --warn-soft:#3a2d18; --code:#2a222b;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#17131a; --surface:#211b22; --ink:#f0e8ec; --muted:#b3a4ac; --line:#3a3039;
+  --accent:#e28aa6; --accent-soft:#3b2530; --warn:#e8b56a; --warn-soft:#3a2d18; --code:#2a222b;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.85;padding-inline:16px;padding-block:32px 64px}
+.wrap{max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:44px}
+h1,h2,h3{font-family:var(--serif);text-wrap:balance;line-height:1.4;margin:0}
+h1{font-size:clamp(24px,5vw,34px)}
+h2{font-size:22px}
+h3{font-size:16px;font-family:var(--sans);font-weight:700}
+p{margin:0}
+a{color:var(--accent)}
+ul,ol{margin:0;padding-left:1.3em}
+li+li{margin-top:4px}
+mark{background:var(--warn-soft);color:var(--warn);padding:0 3px;border-radius:3px}
+.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:700}
+.meta{color:var(--muted);font-size:13px}
+.why{color:var(--muted);font-size:14px}
+header{display:flex;flex-direction:column;gap:12px;border-bottom:1px solid var(--line);padding-bottom:28px}
+.lead{max-width:62ch}
+nav.toc{display:flex;flex-wrap:wrap;gap:8px}
+nav.toc a{font-size:13px;text-decoration:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:4px 12px;border-radius:999px}
+nav.toc a:hover,nav.toc a:focus-visible{border-color:var(--accent);color:var(--accent)}
+section{display:flex;flex-direction:column;gap:16px;scroll-margin-top:16px}
+
+/* 登録URL */
+.hub{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;background:var(--surface);border:1px solid var(--accent);box-shadow:0 0 0 1px var(--accent);border-radius:14px;padding:22px}
+.hub .url{font-family:var(--mono);font-size:15px;word-break:break-all;background:var(--code);padding:10px 12px;border-radius:8px}
+.hub-text{display:flex;flex-direction:column;gap:10px}
+.qr{background:#fff;padding:10px;border-radius:10px;width:152px;height:152px;display:flex;align-items:center;justify-content:center}
+.qr img,.qr canvas{display:block;width:132px!important;height:132px!important}
+.qr-cap{font-size:12px;color:var(--muted);text-align:center;margin-top:6px}
+@media (max-width:560px){.hub{grid-template-columns:1fr}.qrbox{justify-self:center}}
+
+/* 全体図 */
+.flow{display:grid;grid-template-columns:1fr 40px 1fr 40px 1fr;align-items:stretch;gap:0}
+.col{display:flex;flex-direction:column;gap:8px}
+.col h3{font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:700;margin-bottom:2px}
+.node{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:14px;line-height:1.5}
+.node small{display:block;color:var(--muted);font-size:12px}
+.node.hot{border-color:var(--accent);background:var(--accent-soft);color:var(--ink);font-weight:700}
+.arrow{display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:22px}
+.loop{margin-top:10px;font-size:14px;color:var(--muted);border-top:1px dashed var(--line);padding-top:10px}
+@media (max-width:680px){
+  .flow{grid-template-columns:1fr}
+  .arrow{transform:rotate(90deg);height:36px}
+}
+
+/* 場所ごとのカード */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,390px),1fr));gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.card-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.card-head h3{font-size:18px;font-family:var(--serif)}
+.freq{font-size:12px;color:var(--accent);background:var(--accent-soft);padding:1px 10px;border-radius:999px;white-space:nowrap}
+.card dl{margin:0;display:grid;grid-template-columns:5.5em 1fr;gap:4px 10px;font-size:14px}
+.card dt{color:var(--muted)}
+.card dd{margin:0}
+.tpl{display:flex;flex-direction:column;gap:6px}
+.tpl-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tpl-head span{font-size:12px;color:var(--muted)}
+pre.copybox{background:var(--code);border-radius:8px;padding:12px 14px;font-size:13.5px;line-height:1.85;white-space:pre-wrap;word-break:break-word;margin:0;font-family:var(--sans)}
+button.copy{font:inherit;font-size:12px;border:1px solid var(--accent);background:transparent;color:var(--accent);padding:2px 12px;border-radius:999px;cursor:pointer;white-space:nowrap}
+button.copy:hover{background:var(--accent-soft)}
+button.copy:focus-visible,nav.toc a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Zoom タイムライン */
+.timeline{list-style:none;padding:0;display:flex;flex-direction:column;gap:0;border-left:2px solid var(--accent-soft);margin-left:8px}
+.timeline>li{position:relative;padding:0 0 22px 24px;margin:0}
+.timeline>li::before{content:"";position:absolute;left:-7px;top:9px;width:12px;height:12px;border-radius:50%;background:var(--accent)}
+.timeline>li:last-child{padding-bottom:0}
+.when{font-size:12px;letter-spacing:.06em;color:var(--accent);font-weight:700}
+.timeline h3{margin-bottom:6px}
+.timeline .body{display:flex;flex-direction:column;gap:10px}
+
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.04em;background:var(--code)}
+tr:last-child td{border-bottom:none}
+.note{background:var(--warn-soft);border-radius:10px;padding:12px 16px;font-size:14px}
+.note b{color:var(--warn)}
+.insight{background:var(--accent-soft);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+.insight b{color:var(--accent)}
+.sources{font-size:13px;color:var(--muted)}
+.sources ul{padding-left:1.2em}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">SEO担当 提案書 ／ YouTubeサブチャンネル</div>
+  <h1>いつもの発信とZoom会から、<br>サブチャンネル登録につなげる導線</h1>
+  <p class="meta">作成日 2026-09-23 ・ 対象 @love_partnership ・ 前回の「プロフィール記入案」の続き</p>
+  <p class="lead">いま発信している場所（アメブロ・Instagram・Facebook・note・X・公式LINE）とZoom会から、サブチャンネルの登録までの流れをまとめました。考え方は1つです。<b>どこから来ても、同じ「登録用URL」にたどり着くようにする</b>。場所ごとに「置く場所」「言い方の例（コピーできます）」「頻度」を書いています。</p>
+  <nav class="toc" aria-label="目次">
+    <a href="#hub">登録用URL</a><a href="#map">全体図</a><a href="#sns">SNSごとの導線</a><a href="#zoom">Zoom会</a><a href="#main">メインチャンネル</a><a href="#week">1週間の動き方</a><a href="#measure">効果の見方</a>
+  </nav>
+</header>
+
+<!-- 登録用URL -->
+<section id="hub">
+  <h2>すべての導線の行き先：登録用URL</h2>
+  <div class="hub">
+    <div class="hub-text">
+      <div class="url" id="subUrl">https://www.youtube.com/@love_partnership?sub_confirmation=1</div>
+      <p>URLの最後に <code>?sub_confirmation=1</code> を付けると、開いたときに<b>「チャンネル登録しますか？」の確認が出ます</b>。YouTubeが公式に用意している仕組みです。チャンネルのページが開くだけの普通のURLより、ひと手間少なく登録してもらえます。</p>
+      <div><button class="copy" type="button" data-target="subUrl" id="copyUrl">登録用URLをコピー</button></div>
+    </div>
+    <div class="qrbox">
+      <div class="qr" id="qr" aria-label="登録用URLのQRコード"></div>
+      <p class="qr-cap">Zoomの背景やスライドに使えます<br>（スマホのカメラで読めます）</p>
+    </div>
+  </div>
+  <div class="insight">
+    <b>このテーマならではの一言</b>
+    <p>夫婦や恋愛の悩みは、周りに知られたくない方がほとんどです。YouTubeの登録チャンネルは、<b>初期設定では他の人から見えません</b>。お誘いのときに「登録してもほかの人には分かりません」と添えると、ためらいが少なくなります。</p>
+  </div>
+</section>
+
+<!-- 全体図 -->
+<section id="map">
+  <h2>全体図</h2>
+  <div class="flow" role="img" aria-label="各SNSとZoom会から、それぞれの入口を通って登録用URLへ。登録後は動画から公式LINEの相談へ進み、Zoom会に戻ってくる流れの図">
+    <div class="col">
+      <h3>いつもの発信</h3>
+      <div class="node">アメブロ<small>毎日の記事</small></div>
+      <div class="node">Instagram<small>リール・ストーリーズ</small></div>
+      <div class="node">Facebook<small>投稿</small></div>
+      <div class="node">note<small>コラム</small></div>
+      <div class="node">X<small>短文投稿</small></div>
+      <div class="node">公式LINE<small>配信</small></div>
+      <div class="node">Zoom会<small>お話会・講座・個別</small></div>
+      <div class="node">メインチャンネル<small>動画・コミュニティ</small></div>
+    </div>
+    <div class="arrow" aria-hidden="true">→</div>
+    <div class="col">
+      <h3>入口</h3>
+      <div class="node">記事や投稿の最後の決まった文</div>
+      <div class="node">プロフィールのリンク</div>
+      <div class="node">ストーリーズのリンクスタンプ</div>
+      <div class="node">Zoomの背景・最後のスライドのQRコード</div>
+      <div class="node">Zoomのチャットに貼るURL</div>
+      <div class="node">動画の終了画面・固定コメント</div>
+    </div>
+    <div class="arrow" aria-hidden="true">→</div>
+    <div class="col">
+      <h3>ゴール</h3>
+      <div class="node hot">登録用URL<small>?sub_confirmation=1</small></div>
+      <div class="node hot">サブチャンネル登録</div>
+      <div class="node">動画を見る</div>
+      <div class="node">概要欄から公式LINEへ<small>相談の入口</small></div>
+    </div>
+  </div>
+  <p class="loop">↻ 公式LINEから次のZoom会に参加してもらい、そこでまた登録をお誘いする、という循環になります。<b>登録は最後のゴールではなく、相談につなげるための通り道</b>と考えます。</p>
+</section>
+
+<!-- SNS -->
+<section id="sns">
+  <h2>SNSごとの導線</h2>
+  <p>毎回お誘いすると宣伝っぽく見えるので、<b>「決まった場所に置いておくもの」</b>（プロフィール・記事の最後）と<b>「ときどき話題にするもの」</b>（新しい動画のお知らせ）に分けます。</p>
+  <div class="cards">
+
+    <article class="card">
+      <div class="card-head"><h3>アメブロ</h3><span class="freq">毎記事（決まった文）</span></div>
+      <dl><dt>置く場所</dt><dd>記事の最後の決まった文（アメブロの「定型文」機能に登録）、サイドバーのフリースペース</dd>
+      <dt>ポイント</dt><dd>毎日更新しているので、いちばん数が多い入口です。記事のテーマが夫婦や恋愛の日は、関係する動画も1本紹介します。</dd></dl>
+      <div class="tpl"><div class="tpl-head"><span>記事の最後の文</span><button class="copy" type="button" data-target="t-ameba" id="c-ameba">コピー</button></div>
+<pre class="copybox" id="t-ameba">━━━━━━━━━━
+▶ 夫婦・恋愛のすれ違いを「脳と心の仕組み」から見直すYouTubeを始めました
+「愛のパートナーシップの再構築チャンネル」
+https://www.youtube.com/@love_partnership?sub_confirmation=1
+（登録してもほかの人には分かりません）
+━━━━━━━━━━</pre></div>
+    </article>
+
+    <article class="card">
+      <div class="card-head"><h3>Instagram</h3><span class="freq">プロフィール常設＋週1〜2回</span></div>
+      <dl><dt>置く場所</dt><dd>プロフィールのリンク（複数並べられます）、ストーリーズのリンクスタンプ、ハイライト「YouTube」</dd>
+      <dt>ポイント</dt><dd>投稿の本文に書いたURLは押せません。<b>新しい動画を出した日にストーリーズでリンクスタンプ</b>を付け、ハイライトに残します。リールは動画の一部を切り出して「続きはYouTubeで」とします。</dd></dl>
+      <div class="tpl"><div class="tpl-head"><span>ストーリーズの文字</span><button class="copy" type="button" data-target="t-ig" id="c-ig">コピー</button></div>
+<pre class="copybox" id="t-ig">新しい動画を出しました🎥
+「喧嘩のたびに同じパターンになる理由」
+↓ここから見られます</pre></div>
+      <div class="tpl"><div class="tpl-head"><span>リールのキャプションの最後</span><button class="copy" type="button" data-target="t-ig2" id="c-ig2">コピー</button></div>
+<pre class="copybox" id="t-ig2">続きはYouTube「愛のパートナーシップの再構築チャンネル」で。
+プロフィールのリンクから見られます。</pre></div>
+    </article>
+
+    <article class="card">
+      <div class="card-head"><h3>Facebook</h3><span class="freq">新しい動画を出した日</span></div>
+      <dl><dt>置く場所</dt><dd>投稿の本文、プロフィールの「リンク」、自己紹介</dd>
+      <dt>ポイント</dt><dd>Facebookは知り合いが多いので、<b>「なぜこのチャンネルを始めたか」</b>という思いを話すと反応が得やすいです。1回目のお知らせはこの形にします。</dd></dl>
+      <div class="tpl"><div class="tpl-head"><span>初回のお知らせ</span><button class="copy" type="button" data-target="t-fb" id="c-fb">コピー</button></div>
+<pre class="copybox" id="t-fb">新しくYouTubeチャンネルを始めました。
+
+コーチングの現場で、仕事やお金の悩みの奥に「いちばん近い人との関係」の悩みがあることを、何度も見てきました。
+我慢や根性論ではなく、脳と心の仕組みから夫婦や恋人との関係を見直すチャンネルです。
+
+「愛のパートナーシップの再構築チャンネル」
+https://www.youtube.com/@love_partnership?sub_confirmation=1</pre></div>
+      <p class="why">※ 始めた理由は例です。SHOTAさんご自身の言葉に置き換えてください。</p>
+    </article>
+
+    <article class="card">
+      <div class="card-head"><h3>note</h3><span class="freq">毎記事（決まった文）</span></div>
+      <dl><dt>置く場所</dt><dd>記事の最後、プロフィールのリンク</dd>
+      <dt>ポイント</dt><dd>YouTubeのURLを1行で貼ると、動画がそのまま記事の中に表示されます。<b>「今日の記事の内容を動画で話しています」</b>と、記事と動画を1対1で結ぶと見てもらいやすくなります。</dd></dl>
+      <div class="tpl"><div class="tpl-head"><span>記事の最後の文</span><button class="copy" type="button" data-target="t-note" id="c-note">コピー</button></div>
+<pre class="copybox" id="t-note">この記事の内容は、動画でもお話ししています。
+（ここに動画のURLを1行で貼る）
+
+パートナーシップの動画は、こちらのチャンネルにまとめています。
+https://www.youtube.com/@love_partnership?sub_confirmation=1</pre></div>
+    </article>
+
+    <article class="card">
+      <div class="card-head"><h3>X</h3><span class="freq">新しい動画を出した日＋固定投稿</span></div>
+      <dl><dt>置く場所</dt><dd>プロフィールのリンク欄、固定投稿、新しい動画のお知らせ</dd>
+      <dt>ポイント</dt><dd>外部リンク付きの投稿は表示されにくい傾向があります。<b>本文は中身だけにして、URLは自分の返信（リプライ）に書く</b>のがおすすめです。</dd></dl>
+      <div class="tpl"><div class="tpl-head"><span>本文＋返信</span><button class="copy" type="button" data-target="t-x" id="c-x">コピー</button></div>
+<pre class="copybox" id="t-x">【本文】
+夫婦喧嘩がいつも同じ流れになるのは、性格が合わないからではありません。
+脳が「いつものパターン」を安全だと思いこんでいるからです。
+
+【自分への返信】
+くわしくは動画で話しています👇
+https://www.youtube.com/@love_partnership?sub_confirmation=1</pre></div>
+    </article>
+
+    <article class="card">
+      <div class="card-head"><h3>公式LINE</h3><span class="freq">初回あいさつ＋月1〜2回</span></div>
+      <dl><dt>置く場所</dt><dd>友だち追加のときのあいさつ、リッチメニューのボタン、配信</dd>
+      <dt>ポイント</dt><dd>すでに信頼してくれている人たちなので、登録してもらいやすい場所です。<b>リッチメニューに「YouTube」のボタン</b>を1つ置くのが、いちばん手間がかからない方法です。</dd></dl>
+      <div class="tpl"><div class="tpl-head"><span>配信の文</span><button class="copy" type="button" data-target="t-line" id="c-line">コピー</button></div>
+<pre class="copybox" id="t-line">いつもありがとうございます。
+パートナーとの関係についての動画を、YouTubeで毎週<mark>【曜日】</mark>に出しています。
+
+今週のテーマ：<mark>【動画のタイトル】</mark>
+https://www.youtube.com/@love_partnership?sub_confirmation=1
+
+登録してもほかの人には分かりませんので、安心してご覧ください。</pre></div>
+    </article>
+
+  </div>
+</section>
+
+<!-- Zoom -->
+<section id="zoom">
+  <h2>Zoom会での導線</h2>
+  <p>Zoom会は、SHOTAさんのお人柄を知った人が集まる場なので、<b>登録にいちばんつながりやすい場所</b>です。始まる前から終わった後まで、流れに合わせて5回ふれます。</p>
+  <ol class="timeline">
+    <li>
+      <div class="when">開催前</div>
+      <h3>案内のメッセージに1行入れる</h3>
+      <div class="body"><p>参加の案内（LINEやメール）の最後に「予習にどうぞ」と関係する動画を1本紹介します。</p></div>
+    </li>
+    <li>
+      <div class="when">待機中（開始5分前〜）</div>
+      <h3>バーチャル背景・待機画面にQRコード</h3>
+      <div class="body"><p>上のQRコードを右下に入れたバーチャル背景を作っておきます（1920×1080px。顔と重ならない右下の角に、300px以上の大きさで）。待っている間に画面共有で「チャンネルの紹介スライド」を映しておくのも効果的です。</p></div>
+    </li>
+    <li>
+      <div class="when">本編の途中</div>
+      <h3>話の中で動画にふれる</h3>
+      <div class="body"><p>「このお話は動画でもくわしく話しているので、あとでチャットにURLを貼りますね」と、<b>お誘いではなくおすすめ</b>として一度だけ話します。</p></div>
+    </li>
+    <li>
+      <div class="when">終わる直前</div>
+      <h3>最後のスライド＋チャット＋ひと言</h3>
+      <div class="body">
+        <p>最後のスライドにQRコードを大きく映し、同時にチャットにURLを貼ります。ひと言そえて、<b>その場で開いてもらう時間を30秒</b>とります。</p>
+        <div class="tpl"><div class="tpl-head"><span>チャットに貼る文</span><button class="copy" type="button" data-target="t-zoomchat" id="c-zoomchat">コピー</button></div>
+<pre class="copybox" id="t-zoomchat">今日はありがとうございました。
+続きのお話はYouTubeで毎週<mark>【曜日】</mark>に出しています。
+▶ https://www.youtube.com/@love_partnership?sub_confirmation=1
+（登録してもほかの人には分かりません）</pre></div>
+        <div class="tpl"><div class="tpl-head"><span>話すときの台本</span><button class="copy" type="button" data-target="t-zoomtalk" id="c-zoomtalk">コピー</button></div>
+<pre class="copybox" id="t-zoomtalk">今日のお話の続きは、YouTubeでも毎週お届けしています。
+いまチャットにURLを貼ったので、よかったらこの場で開いてみてください。
+画面のQRコードをスマホで読んでも大丈夫です。
+登録しても、ほかの人やご家族に知られることはないので、安心してくださいね。</pre></div>
+      </div>
+    </li>
+    <li>
+      <div class="when">終わった後（当日中）</div>
+      <h3>お礼のメッセージに入れる</h3>
+      <div class="body"><p>お礼のLINEやメールに、その日の話にいちばん近い動画のURLと登録用URLを入れます。Zoomのウェビナーを使う場合は、終了後に開くページやアンケートの設定でURLを案内できるので、設定画面で確認してみてください。</p></div>
+    </li>
+  </ol>
+  <div class="note"><b>気をつけること：</b>参加者のお悩みを動画のネタにする場合は、<b>必ずご本人の了承をとり、誰のことか分からない形に変えてから</b>話してください。夫婦の話はとても個人的なので、信頼を失うとサブチャンネルだけでなく、ほかの活動にも影響します。</div>
+</section>
+
+<!-- メインチャンネル -->
+<section id="main">
+  <h2>メインチャンネルからの導線</h2>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>場所</th><th>やること</th><th>頻度</th></tr></thead>
+    <tbody>
+      <tr><td>チャンネルのリンク・概要欄</td><td>サブチャンネルの登録用URLを追加</td><td>1回だけ</td></tr>
+      <tr><td>おすすめチャンネル</td><td>ホームタブにサブチャンネルを表示</td><td>1回だけ</td></tr>
+      <tr><td>動画の終了画面</td><td>人間関係・コミュニケーションの話の回だけ、サブチャンネルの動画を表示</td><td>関係する回ごと</td></tr>
+      <tr><td>固定コメント</td><td>「パートナーとの関係の話はこちらのチャンネルで」とURL</td><td>関係する回ごと</td></tr>
+      <tr><td>コミュニティ投稿</td><td>サブチャンネル開設のお知らせ（始めた理由をそえて）</td><td>開設時＋月1回</td></tr>
+      <tr><td>動画の中で</td><td>口頭で「サブチャンネルも始めました」と一度ふれる</td><td>開設してから最初の数本</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="why">メインは「自由な人生の選択」、サブは「いちばん近い人との関係」なので、見る人の悩みは重なっています。すべての動画で誘うのではなく、<b>話のテーマが近い回だけ</b>にすると、メインの見る人を離さずにすみます。</p>
+</section>
+
+<!-- 1週間 -->
+<section id="week">
+  <h2>1週間の動き方（例）</h2>
+  <p>サブチャンネルの動画を<mark>【曜日】</mark>に出す場合の例です。新しい動画1本を、いろいろな場所で使い回します。</p>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>いつ</th><th>やること</th><th>場所</th></tr></thead>
+    <tbody>
+      <tr><td>動画を出す日</td><td>新しい動画のお知らせ</td><td>Instagramストーリーズ（リンクスタンプ）・X・Facebook</td></tr>
+      <tr><td>次の日</td><td>動画の中身を記事にして最後に動画を貼る</td><td>アメブロ・note</td></tr>
+      <tr><td>2〜3日後</td><td>動画の一部を切り出して短い動画に</td><td>Instagramリール・YouTubeショート</td></tr>
+      <tr><td>週末</td><td>その週の動画をまとめて紹介</td><td>公式LINE（月1〜2回）</td></tr>
+      <tr><td>毎日</td><td>記事・投稿の最後の決まった文</td><td>アメブロ・note</td></tr>
+      <tr><td>Zoom会のたび</td><td>上の5つの流れ</td><td>Zoom</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- 効果の見方 -->
+<section id="measure">
+  <h2>効果の見方</h2>
+  <ul>
+    <li><b>どこから来たか：</b>YouTube Studio → アナリティクス → 「リーチ」タブ → トラフィックソース → <b>「外部」</b>を開くと、Instagram・アメブロ・LINEなど、どのサイトから来たかが分かります。</li>
+    <li><b>どこで登録されたか：</b>アナリティクス → 「視聴者」タブの登録者の項目で、どのページで登録されたかを確認できます。</li>
+    <li><b>Zoom会の効果：</b>Zoom会の日と翌日の登録者の増え方を、ふだんの日とくらべます。記録用に、開催した日と参加人数だけメモしておいてください。</li>
+    <li><b>見直すタイミング：</b>1か月たったら、登録が多い場所に力を入れ、ほとんど来ない場所は決まった文だけにして手間を減らします。</li>
+  </ul>
+</section>
+
+<footer class="sources">
+  <h3>調べた資料</h3>
+  <ul>
+    <li><a href="https://liver.doneru.jp/youtube-subscription-link/" target="_blank" rel="noopener">YouTubeチャンネルの登録URLの作り方（?sub_confirmation=1）</a></li>
+    <li><a href="https://knock.co.jp/knock_times/youtubeoperation-enrollmenturl/" target="_blank" rel="noopener">KNOCK：チャンネル登録URLの作成と活用法</a></li>
+    <li><a href="https://yokotashurin.com/youtube/subscription-link.html" target="_blank" rel="noopener">YouTube動画の視聴者をチャンネル登録へ誘導する9つの方法</a></li>
+    <li><a href="https://bibin.jp/blog/instagram-stories-urllink/" target="_blank" rel="noopener">bibin：Instagramストーリーズにリンクを貼る方法と注意点</a></li>
+    <li><a href="https://filmora.wondershare.jp/instagram/link-instagram-and-youtube.html" target="_blank" rel="noopener">インスタストーリーズでYouTubeの視聴者を増やす</a></li>
+    <li><a href="https://qr.c-cloud.co.jp/articles/usage/youtube-qr" target="_blank" rel="noopener">QR WORLD：YouTubeのチャンネルをQRコードにする方法（2026年版）</a></li>
+    <li><a href="https://zoom-shukyaku.com/zoom-%E3%82%A2%E3%83%B3%E3%82%B1%E3%83%BC%E3%83%88%EF%BD%B0%E6%A9%9F%E8%83%BD/" target="_blank" rel="noopener">ZOOM集客の学校：終了後のアンケート表示とQRコード</a></li>
+  </ul>
+</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(function(){
+  var el=document.getElementById('qr');
+  try{
+    new QRCode(el,{text:'https://www.youtube.com/@love_partnership?sub_confirmation=1',width:132,height:132,colorDark:'#2a2127',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+  }catch(e){el.textContent='QRコードを表示できませんでした';}
+})();
+document.querySelectorAll('button.copy').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var el=document.getElementById(btn.dataset.target);
+    var text=el.innerText;
+    var label=btn.textContent;
+    function done(msg){btn.textContent=msg;setTimeout(function(){btn.textContent=label},1800)}
+    function fallback(){
+      var r=document.createRange();r.selectNodeContents(el);
+      var s=window.getSelection();s.removeAllRanges();s.addRange(r);
+      done('選択しました');
+    }
+    try{navigator.clipboard.writeText(text).then(function(){done('コピーしました')},fallback);}catch(e){fallback()}
+  });
+});
+</script>
