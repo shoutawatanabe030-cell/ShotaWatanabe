@@ -1,0 +1,688 @@
+<title>AI伴走プログラム</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+/* 1カラムの提案書。段階（0→3）を縦の流れで見せ、数字は表、そのまま使う文面はコピー枠で渡す */
+:root{
+  --bg:#f3f6f5; --surface:#ffffff; --ink:#1f2626; --muted:#5d6969; --line:#dbe3e1;
+  --accent:#1f6670; --accent-soft:#e0eef0;
+  --gold:#85620f; --gold-soft:#f5edd9;
+  --ok:#2f7a55; --ok-soft:#e3f1e9;
+  --warn:#9a4a12; --warn-soft:#f8e9dc;
+  --code:#edf2f1;
+  --serif:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --sans:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#131919; --surface:#1c2424; --ink:#e8eeed; --muted:#a2afae; --line:#2e3939;
+    --accent:#7cc6cc; --accent-soft:#1d3335;
+    --gold:#e2c069; --gold-soft:#342c19;
+    --ok:#7fcfa3; --ok-soft:#1f3329;
+    --warn:#eaa36f; --warn-soft:#3a2a1c;
+    --code:#222c2c;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#131919; --surface:#1c2424; --ink:#e8eeed; --muted:#a2afae; --line:#2e3939;
+  --accent:#7cc6cc; --accent-soft:#1d3335;
+  --gold:#e2c069; --gold-soft:#342c19;
+  --ok:#7fcfa3; --ok-soft:#1f3329;
+  --warn:#eaa36f; --warn-soft:#3a2a1c;
+  --code:#222c2c;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.85;padding-inline:16px;padding-block:32px 64px}
+.wrap{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:52px}
+h1,h2,h3{font-family:var(--serif);text-wrap:balance;line-height:1.4;margin:0}
+h1{font-size:clamp(25px,5.2vw,36px)}
+h2{font-size:23px}
+h3{font-size:16px;font-family:var(--sans);font-weight:700}
+p{margin:0}
+a{color:var(--accent)}
+ul,ol{margin:0;padding-left:1.3em}
+li+li{margin-top:4px}
+b{font-weight:700}
+.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:700}
+.meta{color:var(--muted);font-size:13px}
+.why{color:var(--muted);font-size:14px}
+.lead{max-width:64ch}
+header{display:flex;flex-direction:column;gap:14px;border-bottom:1px solid var(--line);padding-bottom:30px}
+section{display:flex;flex-direction:column;gap:18px;scroll-margin-top:16px}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.sec-head p{max-width:64ch}
+
+/* 冒頭の要点 */
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:12px}
+.summary div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.summary b{font-size:12px;color:var(--accent);letter-spacing:.06em}
+.summary span{font-size:14px;line-height:1.7}
+.quote{border-left:3px solid var(--gold);padding:4px 0 4px 16px;font-family:var(--serif);font-size:16px;line-height:1.9;max-width:62ch}
+.quote small{display:block;font-family:var(--sans);font-size:12px;color:var(--muted);margin-top:4px}
+nav.toc{display:flex;flex-wrap:wrap;gap:8px}
+nav.toc a{font-size:13px;text-decoration:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:4px 12px;border-radius:999px}
+nav.toc a:hover{border-color:var(--accent);color:var(--accent)}
+nav.toc a:focus-visible,button.copy:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* 理由 */
+.reasons{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px}
+.reason{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.reason h3{font-size:15px}
+.reason p{font-size:14px}
+
+/* 商品の階段 */
+.ladder{display:flex;flex-direction:column;gap:8px}
+.rung{display:grid;grid-template-columns:7.5em 1fr auto;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:11px 16px}
+.rung .lv{font-size:12px;color:var(--muted);letter-spacing:.06em}
+.rung .price{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rung.new{border-color:var(--accent);background:var(--accent-soft)}
+.rung.new .lv{color:var(--accent);font-weight:700}
+.rung.out{opacity:.72}
+.rung small{display:block;color:var(--muted);font-size:12.5px;line-height:1.6}
+@media (max-width:560px){.rung{grid-template-columns:1fr;gap:2px}.rung .price{justify-self:start}}
+
+/* コース */
+.courses{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:16px}
+.course{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.course .tag{align-self:flex-start;font-size:11px;font-weight:700;letter-spacing:.06em;padding:1px 9px;border-radius:4px;background:var(--accent);color:var(--surface)}
+.course .tag.gold{background:var(--gold)}
+.course h3{font-family:var(--serif);font-size:19px}
+.course .price{font-size:14px;color:var(--muted)}
+.course .price b{font-size:20px;color:var(--ink);font-variant-numeric:tabular-nums}
+.course ul{font-size:14px}
+
+/* LINEのやりとり例 */
+.chat-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:720px){.chat-wrap{grid-template-columns:1fr}}
+.phone{background:var(--code);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.phone-top{font-size:12px;color:var(--muted);text-align:center;border-bottom:1px solid var(--line);padding-bottom:8px}
+.msg{display:flex;flex-direction:column;gap:2px;max-width:88%}
+.msg .b{padding:9px 12px;border-radius:14px;font-size:13.5px;line-height:1.75}
+.msg time{font-size:11px;color:var(--muted)}
+.msg.ai{align-self:flex-start}
+.msg.ai .b{background:var(--surface);border:1px solid var(--line);border-top-left-radius:4px}
+.msg.me{align-self:flex-end;align-items:flex-end}
+.msg.me .b{background:var(--accent-soft);border-top-right-radius:4px}
+.msg .who{font-size:11px;color:var(--muted)}
+.chat-notes{display:flex;flex-direction:column;gap:12px;font-size:14px}
+.chat-notes div{display:flex;flex-direction:column;gap:2px}
+.chat-notes b{font-size:13px;color:var(--accent)}
+
+/* 表 */
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:600px;font-size:14px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.04em;background:var(--code);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+td.k{font-weight:700;white-space:nowrap}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.hl td{background:var(--accent-soft)}
+tr.sum td{font-weight:700;background:var(--code)}
+.pill{display:inline-block;font-size:11.5px;padding:0 8px;border-radius:4px;white-space:nowrap;background:var(--accent-soft);color:var(--accent);font-weight:700}
+.pill.gold{background:var(--gold-soft);color:var(--gold)}
+.tbl.wide table{min-width:680px}
+
+/* 段階 */
+.stages{display:flex;flex-direction:column;gap:0;position:relative}
+.stage{display:grid;grid-template-columns:56px 1fr;gap:0 16px}
+.stage .rail{display:flex;flex-direction:column;align-items:center}
+.stage .no{width:44px;height:44px;border-radius:50%;border:2px solid var(--accent);color:var(--accent);background:var(--surface);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:700;font-size:18px;flex:none}
+.stage.now .no{background:var(--accent);color:var(--surface)}
+.stage .bar{flex:1;width:2px;background:var(--line);min-height:20px}
+.stage:last-child .bar{display:none}
+.stage .body{padding-bottom:26px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.stage .head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+.stage .head h3{font-family:var(--serif);font-size:19px}
+.stage .when{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.stage .facts{display:grid;grid-template-columns:5.5em 1fr;gap:4px 12px;font-size:14px;margin:0}
+.stage .facts dt{color:var(--muted)}
+.stage .facts dd{margin:0;min-width:0}
+.gate{background:var(--gold-soft);border-radius:10px;padding:12px 16px;font-size:14px;display:flex;flex-direction:column;gap:6px}
+.gate b.t{color:var(--gold);font-size:13px;letter-spacing:.04em}
+.gate ul{padding-left:1.2em}
+@media (max-width:520px){.stage{grid-template-columns:40px 1fr;gap:0 10px}.stage .no{width:34px;height:34px;font-size:15px}.stage .facts{grid-template-columns:1fr}.stage .facts dt{margin-top:6px}}
+
+/* しくみの図 */
+.flow{display:grid;grid-template-columns:1fr 34px 1.2fr 34px 1fr;align-items:stretch}
+.col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.col h3{font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.node{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:14px;line-height:1.55}
+.node small{display:block;color:var(--muted);font-size:12px}
+.node.key{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+.node.key small{font-weight:400}
+.node.alert{border-color:var(--warn)}
+.down{text-align:center;color:var(--accent);font-size:14px;line-height:1}
+.arrow{display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:20px}
+@media (max-width:700px){.flow{grid-template-columns:1fr}.arrow{transform:rotate(90deg);height:32px}}
+
+/* 決めごと・注意 */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.card h3{font-size:15px}
+.card p,.card li{font-size:14px}
+.card .rec{font-size:13px;color:var(--accent);font-weight:700}
+.note{background:var(--warn-soft);border-radius:10px;padding:12px 16px;font-size:14px}
+.note b{color:var(--warn)}
+.okbox{background:var(--ok-soft);border-radius:10px;padding:12px 16px;font-size:14px}
+.okbox b{color:var(--ok)}
+
+/* 今週やること */
+.todo{display:flex;flex-direction:column;gap:10px}
+.task{display:grid;grid-template-columns:7.5em 1fr;gap:4px 16px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 16px;font-size:14px}
+.task .d{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.task .d small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.task .w{display:flex;flex-direction:column;gap:2px;min-width:0}
+.task .owner{font-size:12px;color:var(--accent);font-weight:700}
+@media (max-width:520px){.task{grid-template-columns:1fr}}
+
+/* コピー枠 */
+.tpl{display:flex;flex-direction:column;gap:8px}
+.tpl-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.tpl-head h3{font-size:15px}
+.tpl-head span{font-size:12px;color:var(--muted)}
+pre.copybox{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:14px 16px;font-size:13.5px;line-height:1.9;white-space:pre-wrap;word-break:break-word;margin:0;font-family:var(--sans);color:var(--ink)}
+button.copy{font:inherit;font-size:12px;border:1px solid var(--accent);background:transparent;color:var(--accent);padding:2px 12px;border-radius:999px;cursor:pointer;white-space:nowrap}
+button.copy:hover{background:var(--accent-soft)}
+
+footer{border-top:1px solid var(--line);padding-top:20px;display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--muted)}
+footer ul{padding-left:1.2em}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">新規事業 提案書 ／ 「孫正義なら何に賭ける？」の回答から</div>
+  <h1>AIで、SHOTAさんのコーチングを<br>1,000人に同時に届ける「AI伴走プログラム」</h1>
+  <p class="meta">作成日 2026-10-05（月） ・ 提出先 渡辺笙太（SHOTA）さま ・ 対象期間 2026年10月〜2027年10月</p>
+  <p class="quote">あなたのコーチングをAIに乗せて、一人のコーチが1000人に同時に伴走できるようにする。14日間の実践ワークでは毎日AIが声をかけて伴走し、大事な場面にだけあなたが入る。<small>孫正義さんならこう答える、という想定の回答より</small></p>
+  <p class="lead">この案を、実際に動かすための手順にしました。<b>最初から1000万円を用意する必要はありません。</b>まず10人に手作業で試し（費用はほぼ0円）、数字で手応えが出たら次の段階にお金を入れます。勝てると分かったところにだけ、大きく張る進め方です。</p>
+  <div class="summary">
+    <div><b>何をつくるか</b><span>SHOTAさんのメソッドを覚えたAIが、LINEで毎日伴走するプログラム</span></div>
+    <div><b>売り方</b><span>VIP（59,800円）の14日間ワークに付け、その後は月9,800円の継続コースへ</span></div>
+    <div><b>最初の一手</b><span>今週、メソッドの「教科書」を書き出し、10人に声をかける</span></div>
+    <div><b>判断の基準</b><span>10人中7人が14日間を最後まで続けたら、次の段階へ進む</span></div>
+  </div>
+  <nav class="toc" aria-label="目次">
+    <a href="#why">なぜやるのか</a><a href="#product">何をつくるか</a><a href="#stages">進め方と関門</a><a href="#system">しくみ</a><a href="#money">お金の見通し</a><a href="#risks">気をつけること</a><a href="#thisweek">今週やること</a><a href="#templates">そのまま使う文面</a><a href="#decide">決めてほしいこと</a>
+  </nav>
+</header>
+
+<!-- なぜやるのか -->
+<section id="why">
+  <div class="sec-head">
+    <h2>なぜやるのか</h2>
+    <p>いまの商品の並びでは、売上の上限がSHOTAさんの時間で決まっています。AIに毎日の伴走を任せれば、この上限を外せます。</p>
+  </div>
+  <div class="reasons">
+    <div class="reason"><h3>コーチングの上限は「時間」</h3><p>個別セッションは1日に数人が限界です。毎日の声かけと記録をAIが受け持てば、SHOTAさんは大事な場面にだけ時間を使えます。</p></div>
+    <div class="reason"><h3>AIで会社を回す力がもうある</h3><p>リサーチ、SEO、発信、制作をAIの担当で動かしている今の体制は、そのままこのプログラムの土台になります。</p></div>
+    <div class="reason"><h3>悩みにちょうど合う</h3><p>「拝金主義に疲れた。でも高いコーチングには手が出ない」という人に、月1万円以下で毎日の伴走を届けられます。</p></div>
+    <div class="reason"><h3>自分の資産が残る</h3><p>他社の商品を売るのと違い、メソッドも会員も記録も自社に積み上がります。続けるほど強くなる商品です。</p></div>
+  </div>
+
+  <h3>いまの商品の並びに、どう加わるか</h3>
+  <div class="ladder" role="list">
+    <div class="rung" role="listitem"><span class="lv">入口</span><span>YouTube（メイン・サブ）、SNS、公式LINEの配信</span><span class="price">無料</span></div>
+    <div class="rung" role="listitem"><span class="lv">つながる・話す</span><span>お金のブロック外し 限定動画／無料セッション</span><span class="price">無料</span></div>
+    <div class="rung" role="listitem"><span class="lv">学ぶ</span><span>動画セミナー（60〜90分）</span><span class="price">29,800円</span></div>
+    <div class="rung new" role="listitem"><span class="lv">深める（変更）</span><span>動画セミナーVIP<small>14日間の実践ワークを、PDFから「AI伴走」に置きかえる。個別セッション（30〜60分）はそのまま</small></span><span class="price">59,800円</span></div>
+    <div class="rung new" role="listitem"><span class="lv">続ける（新設）</span><span>AI伴走 継続コース<small>14日間のあとも、毎朝の問いと相談を続けられる月額コース</small></span><span class="price">月9,800円</span></div>
+    <div class="rung out" role="listitem"><span class="lv">いちばん上</span><span>Healy<small>継続コースのAIでは扱わない（理由は「気をつけること」に記載）</small></span><span class="price">30〜120万円</span></div>
+  </div>
+</section>
+
+<!-- 何をつくるか -->
+<section id="product">
+  <div class="sec-head">
+    <h2>何をつくるか</h2>
+    <p>中身は「毎朝ひとつの問いが届き、返信するとAIコーチが返してくれる」LINEのやりとりです。AIはSHOTAさんの考え方を書いた「教科書」と、その人のこれまでの記録をもとに返事をします。</p>
+  </div>
+  <div class="courses">
+    <div class="course">
+      <span class="tag">コースA</span>
+      <h3>14日間 AI伴走</h3>
+      <p class="price">動画セミナーVIPに含める（<b>59,800円</b>）</p>
+      <ul>
+        <li>毎朝7:00に、その日の問いがLINEで届く</li>
+        <li>いつ返信しても、AIコーチがすぐ返す</li>
+        <li>Day 7にSHOTAさんのグループZoom（30分）</li>
+        <li>Day 14に振り返りと「次のゴール」づくり</li>
+        <li>個別セッション（30〜60分）はこれまでどおり</li>
+      </ul>
+    </div>
+    <div class="course">
+      <span class="tag gold">コースB</span>
+      <h3>AI伴走 継続コース</h3>
+      <p class="price">月額 <b>9,800円</b>（いつでも解約できる）</p>
+      <ul>
+        <li>14日ごとに新しいテーマで、毎朝の問いが続く</li>
+        <li>迷ったときに、いつでもAIコーチに相談できる</li>
+        <li>月1回、SHOTAさんのグループライブ</li>
+        <li>個別セッションは希望者に別料金で案内</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>やりとりの例（Day 3）</h3>
+  <div class="chat-wrap">
+    <div class="phone" role="img" aria-label="LINEでのAIコーチと参加者のやりとりの例">
+      <div class="phone-top">会員専用LINE ・ SHOTAメソッド AIコーチ（例）</div>
+      <div class="msg ai"><span class="who">AIコーチ</span><div class="b">おはようございます、Day 3 です。昨日は「本当はやりたいこと」を3つ書いてくれましたね。<br>今日の問いです。<b>もしお金と時間の心配がまったくなかったら、その3つのうち、どれから始めますか？</b></div><time>7:00</time></div>
+      <div class="msg me"><div class="b">海外で暮らしながら仕事をすること。でも今の収入じゃ無理だと思います。</div><time>12:41</time></div>
+      <div class="msg ai"><span class="who">AIコーチ</span><div class="b">「無理だ」と感じるのは自然なことです。脳は、今の自分に合わないゴールを「無理」と判断して、元の状態に戻そうとします。それは、ゴールがちゃんと今の外側にある証拠でもあります。<br>今日は「どうやるか」は考えなくて大丈夫です。<b>海外で暮らしている自分の一日を、朝起きてから寝るまで3行で書いてみてください。</b></div><time>12:41</time></div>
+    </div>
+    <div class="chat-notes">
+      <div><b>朝の問いは1日1通だけ</b><span>LINEの費用がかかるのは、こちらから送るこの1通です。AIの返事は「返信」として送るので、通数に数えられません。</span></div>
+      <div><b>返事は短く、最後は問いか行動で終える</b><span>3〜6行で、相手の言葉を受け止めてから、今日できる小さな一歩を渡します。</span></div>
+      <div><b>AIであることを最初に伝える</b><span>名前は「SHOTAメソッド AIコーチ」のようにして、SHOTAさん本人のふりはしません。信頼を守るためです。</span></div>
+      <div><b>文面は例です</b><span>実際の言い回しは、今週書き出す教科書をもとに、SHOTAさんの言葉に合わせます。</span></div>
+    </div>
+  </div>
+
+  <h3>14日間の流れ（案）</h3>
+  <p class="why">SHOTAさんの発信で使っている考え方を、1日1つの問いにしました。順番と中身はSHOTAさんが最終決定します。</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>日</th><th>テーマ</th><th>その日の問い（例）</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Day 1</td><td>いまの自分を知る</td><td>今の毎日で「本当はやりたくないこと」を3つ書くと？</td></tr>
+        <tr><td class="k">Day 2</td><td>本当にやりたいこと</td><td>誰にも遠慮しなくていいなら、やりたいことを3つ挙げると？</td></tr>
+        <tr><td class="k">Day 3</td><td>ゴールを今の外側に置く</td><td>お金と時間の心配がなかったら、どれから始める？</td></tr>
+        <tr><td class="k">Day 4</td><td>ゴールの臨場感</td><td>ゴールを叶えた自分の一日を、朝から夜まで3行で書くと？</td></tr>
+        <tr><td class="k">Day 5</td><td>「どうせ無理」の正体</td><td>今日「無理」と思った瞬間はいつ？そのとき何と考えた？</td></tr>
+        <tr><td class="k">Day 6</td><td>思い込み（ブリーフシステム）</td><td>「自分はこういう人間だ」と思っていることを3つ書くと？</td></tr>
+        <tr class="hl"><td class="k">Day 7</td><td>中間ふりかえり</td><td>この1週間で変わったことは？ ＋ SHOTAさんのグループZoom（30分）</td></tr>
+        <tr><td class="k">Day 8</td><td>お金のブロックを見つける</td><td>お金について、子どものころによく聞いた言葉は？</td></tr>
+        <tr><td class="k">Day 9</td><td>お金の思い込みを書きかえる</td><td>その言葉を、今の自分ならどう言いかえる？</td></tr>
+        <tr><td class="k">Day 10</td><td>セルフトーク</td><td>今日、自分に言った口ぐせを1つ選んで書きかえると？</td></tr>
+        <tr><td class="k">Day 11</td><td>エフィカシー</td><td>「自分ならできる」と思える根拠を、過去から3つ集めると？</td></tr>
+        <tr><td class="k">Day 12</td><td>先のばしに気づく</td><td>やろうと思っていて、つい後回しにしていることは？</td></tr>
+        <tr><td class="k">Day 13</td><td>最初の一歩</td><td>ゴールに向けて、今日10分でできることは？</td></tr>
+        <tr class="hl"><td class="k">Day 14</td><td>ふりかえりと次のゴール</td><td>14日前の自分に一言かけるなら？ 次の14日で叶えたいことは？</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>AIとSHOTAさんの役割分担</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>仕事</th><th>AIコーチ</th><th>SHOTAさん</th></tr></thead>
+      <tbody>
+        <tr><td class="k">毎朝の問い</td><td>決められた問いを、その人の記録に合わせて送る</td><td>14日分の問いを決める（最初の1回だけ）</td></tr>
+        <tr><td class="k">返事</td><td>すぐに返す</td><td>段階1は全部を確認してから送る。段階2からは週1回の抜き取り確認</td></tr>
+        <tr><td class="k">記録</td><td>ゴール・気づき・止まっている日を毎日まとめる</td><td>毎朝10分、全員分の要約を読む</td></tr>
+        <tr><td class="k">危ないサイン</td><td>公的な相談窓口を案内し、すぐSHOTAさんに知らせる</td><td>その日のうちに本人へ連絡する</td></tr>
+        <tr><td class="k">人が入る場面</td><td>入らない</td><td>Day 7のグループZoom、月1回のライブ、個別相談の希望者</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 進め方 -->
+<section id="stages">
+  <div class="sec-head">
+    <h2>進め方と関門</h2>
+    <p>4つの段階に分け、段階の終わりごとに「関門」を置きます。関門の数字を超えたときだけ、次の段階のお金を使います。超えなかったときは、原因を直して同じ段階をもう一度やります。</p>
+  </div>
+  <div class="stages">
+    <div class="stage now">
+      <div class="rail"><span class="no">0</span><span class="bar"></span></div>
+      <div class="body">
+        <div class="head"><h3>準備</h3><span class="when">10/5（月）〜10/11（日）</span></div>
+        <dl class="facts">
+          <dt>やること</dt><dd>メソッドの「教科書」を書き出す。14日間の問いを決める。無料セッションの参加者から10人に声をかける。事前アンケートを用意する</dd>
+          <dt>費用</dt><dd>0円</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="stage">
+      <div class="rail"><span class="no">1</span><span class="bar"></span></div>
+      <div class="body">
+        <div class="head"><h3>手作業で10人に試す</h3><span class="when">10/12（月）〜10/25（日）の14日間、ふりかえりは10/31（土）まで</span></div>
+        <dl class="facts">
+          <dt>やり方</dt><dd>仕組みはまだ作りません。今の公式LINEのチャットで送ります。返事はClaudeが下書きし、SHOTAさんが目を通してから送ります（1日30〜60分ほど）</dd>
+          <dt>参加費</dt><dd>無料（そのかわり、最初と最後のアンケートに答えてもらう）</dd>
+          <dt>費用</dt><dd>ほぼ0円（今使っているClaudeの契約の中で行う）</dd>
+          <dt>分かること</dt><dd>14日間続くか、どの問いで止まるか、AIの返事がSHOTAさんらしいか、お金を払ってでも続けたいか</dd>
+        </dl>
+        <div class="gate">
+          <b class="t">関門1（10/31）：次のすべてを満たしたら段階2へ</b>
+          <ul>
+            <li>10人中7人以上が、Day 14まで続けた</li>
+            <li>毎日の返信率（その日の問いに返した人の割合）が平均60%以上</li>
+            <li>「自分ならできる」の自己評価（10点満点）が、平均で2点以上上がった</li>
+            <li>「月9,800円でも続けたい」と答えた人が3人以上</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="stage">
+      <div class="rail"><span class="no">2</span><span class="bar"></span></div>
+      <div class="body">
+        <div class="head"><h3>仕組みにして100人に広げる</h3><span class="when">11/1（日）〜2027/1/31（日）</span></div>
+        <dl class="facts">
+          <dt>11月</dt><dd>LINEとAIをつなぐ仕組みを作る（Claude Codeで自作）。利用規約・特定商取引法の表示・プライバシーポリシーを弁護士に確認してもらう。会員専用のLINEと決済を準備する</dd>
+          <dt>12月〜1月</dt><dd>12/1（火）から100人を募集。動画セミナーVIPの購入者にはコースAとして提供し、継続コースは「初期メンバー価格」で受け付ける。1月に小さな広告テストをする</dd>
+          <dt>費用</dt><dd>約150万円（内訳は「お金の見通し」）。初期メンバーの会費で、この段階から売上も入る</dd>
+        </dl>
+        <div class="gate">
+          <b class="t">関門2（2027/1/31）：次のすべてを満たしたら段階3へ</b>
+          <ul>
+            <li>継続コースの会員の70%以上が、2か月目も続けている</li>
+            <li>1か月の退会が10%以下</li>
+            <li>危ないサインの見落としが0件</li>
+            <li>会員1人あたりのAIの費用が、月1,000円以下</li>
+            <li>広告テストで、会員1人を集める費用が15,000円以下</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="stage">
+      <div class="rail"><span class="no">3</span><span class="bar"></span></div>
+      <div class="body">
+        <div class="head"><h3>本格的に広げる</h3><span class="when">2027/2/1（月）〜2027年10月</span></div>
+        <dl class="facts">
+          <dt>やること</dt><dd>継続コースを月9,800円で一般に公開。広告を本格的に出す。問いに合わせた短い解説動画をそろえる。会員のサポート担当（人）を置く</dd>
+          <dt>費用</dt><dd>残りの約850万円</dd>
+          <dt>目標</dt><dd>2027年10月に会員1,000人（月の売上 980万円）</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- しくみ -->
+<section id="system">
+  <div class="sec-head">
+    <h2>しくみ（段階2で作るもの）</h2>
+    <p>段階1は手作業なので、作るのは関門1を超えてからです。会員はいつものLINEを使うだけで、裏側で次のように動きます。</p>
+  </div>
+  <div class="flow" role="img" aria-label="会員がLINEで送ったメッセージが、中継サーバーからClaude APIに渡り、教科書とその人の記録をもとに作った返事がLINEに戻る。記録はデータベースに残り、SHOTAさんは毎朝の要約と危ないサインの通知を受け取る図">
+    <div class="col">
+      <h3>会員</h3>
+      <div class="node">決済して申し込む<small>Stripeで月額の支払い</small></div>
+      <div class="node">毎朝の問いを受け取る<small>1日1通、7:00</small></div>
+      <div class="node">いつでも返信・相談する<small>いつものLINEのまま</small></div>
+    </div>
+    <div class="arrow" aria-hidden="true">⇄</div>
+    <div class="col">
+      <h3>しくみ</h3>
+      <div class="node">会員専用のLINE公式アカウント<small>今の公式LINEとは分ける</small></div>
+      <div class="down" aria-hidden="true">↓</div>
+      <div class="node">中継サーバー<small>メッセージを受け取り、AIに渡す</small></div>
+      <div class="down" aria-hidden="true">↓</div>
+      <div class="node key">Claude API（AIコーチ）<small>教科書＋その人の記録をもとに返事を作る</small></div>
+      <div class="down" aria-hidden="true">↓</div>
+      <div class="node">記録（データベース）<small>ゴール・今日のDay・これまでの気づき</small></div>
+    </div>
+    <div class="arrow" aria-hidden="true">→</div>
+    <div class="col">
+      <h3>SHOTAさん</h3>
+      <div class="node">毎朝の要約<small>全員分を1ページで読める確認画面</small></div>
+      <div class="node alert">危ないサインの通知<small>すぐにSHOTAさんへ届く</small></div>
+      <div class="node">個別相談の希望<small>セッション・販売担当へ回す</small></div>
+    </div>
+  </div>
+
+  <h3>決めておくこと</h3>
+  <div class="cards">
+    <div class="card">
+      <h3>会員専用のLINEを新しく作る</h3>
+      <p>今の公式LINEは、配信や手動のチャットに使い続けます。会員とのやりとりを分けておくと、配信とAIの返事が混ざらず、会員だけの場所にもなります。</p>
+    </div>
+    <div class="card">
+      <h3>LINEの費用を「朝の1通」に絞る</h3>
+      <p>こちらから送るメッセージは通数に数えられますが、会員への返信は数えられません。朝の1通だけにすると、1人あたり月30通です。1,000人でも月30,000通で、スタンダードプラン（月15,000円）に収まります。</p>
+    </div>
+    <div class="card">
+      <h3>AIはClaude Opus 5.5を使う</h3>
+      <p>Anthropicの高性能なモデルで、日本語の細かいニュアンスにも強いです。教科書の部分は毎回同じなので、使い回し（プロンプトキャッシュ）で費用を下げます。もっと安いモデルに切り替える選択肢もありますが、返事の質を比べてから決めます。</p>
+    </div>
+    <div class="card">
+      <h3>作るのはClaude Code</h3>
+      <p>今の体制と同じく、開発もClaudeの担当が行います。外注の開発費はかかりません。安全のため、できあがったものは外部のエンジニアに一度見てもらいます。</p>
+    </div>
+    <div class="card">
+      <h3>既存の「AI分身」サービスは使わない</h3>
+      <p>Delphiなど、コーチの分身AIを作れる海外サービスもあります。ただ、サブスクを売る機能は最上位の個別見積もりプランだけで、会員とのやりとりも基本はそのサービスの画面になります。今のお客さんが集まっているLINEで動かすほうが合っています。</p>
+    </div>
+    <div class="card">
+      <h3>返事が遅いときの扱い</h3>
+      <p>返信として送れるのは、受け取ってから短い時間のうちだけです。返事は短めにして素早く返し、時間がかかったときだけ、こちらから送る形に切り替えます。</p>
+    </div>
+  </div>
+</section>
+
+<!-- お金 -->
+<section id="money">
+  <div class="sec-head">
+    <h2>お金の見通し</h2>
+    <p>継続コースの会員1人あたり、月の費用は約1,200円です。残りの約8,600円（約88%）が粗利になります。</p>
+  </div>
+
+  <h3>会員1人あたりの月の費用（1,000人のとき）</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>項目</th><th class="num">1人あたり</th><th>計算のもと</th></tr></thead>
+      <tbody>
+        <tr><td class="k">AIの利用料</td><td class="num">約800円</td><td>1日3往復、毎朝の問いづくりと要約を含む。たくさん使う人（1日10往復）で約2,000円。1日20往復までの上限を設ける</td></tr>
+        <tr><td class="k">決済手数料</td><td class="num">約353円</td><td>Stripeの国内カード 3.6%</td></tr>
+        <tr><td class="k">LINE</td><td class="num">約15円</td><td>スタンダードプラン 月15,000円 ÷ 1,000人</td></tr>
+        <tr><td class="k">サーバー・データベース</td><td class="num">約20円</td><td>月2万円ほど ÷ 1,000人</td></tr>
+        <tr class="sum"><td class="k">合計</td><td class="num">約1,200円</td><td>月9,800円 − 約1,200円 ＝ 粗利 約8,600円</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="why">AIの利用料は、Claude Opus 5.5の料金（100万トークンあたり 入力4ドル・出力20ドル・使い回し部分0.2ドル）、1ドル＝150円で見積もりました。段階1で実際の使われ方を見て、数字を置きかえます。</p>
+
+  <h3>会員数ごとの売上</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>会員数</th><th class="num">月の売上</th><th class="num">月の費用（上の表）</th><th class="num">月の粗利</th><th>目安の時期</th></tr></thead>
+      <tbody>
+        <tr><td class="k">100人</td><td class="num">98万円</td><td class="num">約13万円</td><td class="num">約85万円</td><td>段階2の終わり（初期メンバー価格のあいだは売上がこれより少ない）</td></tr>
+        <tr><td class="k">300人</td><td class="num">294万円</td><td class="num">約36万円</td><td class="num">約258万円</td><td>2027年春〜夏</td></tr>
+        <tr class="hl"><td class="k">1,000人</td><td class="num">980万円</td><td class="num">約120万円</td><td class="num">約860万円</td><td>2027年10月（年の売上 約1億1,760万円）</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="why">ここには広告費・人件費・SHOTAさんの時間は入れていません。100人のときは、LINEとサーバーの固定費が1人あたりに重くなるため、1人約1,300円で計算しています。</p>
+
+  <h3>1000万円の使い方（段階ごと）</h3>
+  <p>孫さんの回答では開発に400万円を充てていましたが、Claude Codeで自作すれば開発費はほとんどかかりません。そのぶんを、会員を集める広告と、会員を支える人に回します。</p>
+  <div class="tbl wide">
+    <table>
+      <thead><tr><th>段階</th><th>使い道</th><th class="num">金額</th></tr></thead>
+      <tbody>
+        <tr><td class="k">0〜1</td><td>教科書づくり・10人の試し（今のClaudeの契約の中で行う）</td><td class="num">ほぼ0円</td></tr>
+        <tr><td class="k" rowspan="5">2</td><td>外部エンジニアによる仕組みの確認（安全面・個人情報の扱い）</td><td class="num">30万円</td></tr>
+        <tr><td>弁護士の確認（利用規約・特定商取引法の表示・プライバシーポリシー）</td><td class="num">30万円</td></tr>
+        <tr><td>運用費 3か月分（LINE・サーバー・AI）</td><td class="num">15万円</td></tr>
+        <tr><td>広告テスト（1人集めるのにいくらかかるかを測る）</td><td class="num">50万円</td></tr>
+        <tr><td>予備</td><td class="num">25万円</td></tr>
+        <tr><td class="k" rowspan="4">3</td><td>広告（1人15,000円で約400人を集める）</td><td class="num">600万円</td></tr>
+        <tr><td>問いに合わせた短い解説動画の制作</td><td class="num">100万円</td></tr>
+        <tr><td>会員サポート担当（人）</td><td class="num">100万円</td></tr>
+        <tr><td>予備</td><td class="num">50万円</td></tr>
+        <tr class="sum"><td class="k">計</td><td></td><td class="num">1,000万円</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="okbox"><b>広告にいくらまで使えるか：</b>会員が平均6か月続くとすると、1人から得られる粗利は約5万円（8,600円×6か月）です。1人集める費用は、その3分の1以下の15,000円を上限にします。残りの会員は、YouTube・公式LINE・VIPからの継続・紹介で集めます。</div>
+</section>
+
+<!-- 気をつけること -->
+<section id="risks">
+  <div class="sec-head">
+    <h2>気をつけること</h2>
+    <p>心とお金に触れる商品なので、守りを先に決めておきます。法律にかかわる部分は、段階2で弁護士に確認してもらいます。</p>
+  </div>
+  <div class="tbl wide">
+    <table>
+      <thead><tr><th>心配なこと</th><th>対策</th></tr></thead>
+      <tbody>
+        <tr><td class="k">AIの返事がSHOTAさんらしくない</td><td>段階1では全部の返事をSHOTAさんが確認します。直したところは教科書に書き足し、同じずれを繰り返さないようにします。</td></tr>
+        <tr><td class="k">心の不調が深い人が来る</td><td>申し込みのときに「医療やカウンセリングではない」と明記します。「死にたい」「消えたい」などの言葉が出たら、AIは公的な相談窓口（厚生労働省「まもろうよ こころ」に載っている窓口など）を案内し、すぐSHOTAさんに知らせます。</td></tr>
+        <tr><td class="k">効果を約束してしまう</td><td>「必ず収入が上がる」「治る」のような言い方は、AIにも広告にも使わせません（景品表示法）。</td></tr>
+        <tr><td class="k">Healyの案内</td><td>健康にかかわる高額な機器なので、AIには案内させません。関心がある人には、これまでどおり人が個別に対応します。</td></tr>
+        <tr><td class="k">個人情報</td><td>会話を海外のAIサービス（Anthropic）に送って返事を作ることを、プライバシーポリシーに書いて同意をもらいます。Claude APIに送った会話は、標準ではAIの学習に使われません。</td></tr>
+        <tr><td class="k">月額課金のトラブル</td><td>申し込み画面に、金額・支払いの時期・解約の方法をはっきり出します（特定商取引法）。解約はLINEのメニューから1回で手続きできるようにします。</td></tr>
+        <tr><td class="k">続かない（退会が多い）</td><td>14日ごとにテーマを変える、月1回のライブで人とつながる、続いた日数を見える形にする、の3つで支えます。関門2で数字を見ます。</td></tr>
+        <tr><td class="k">SHOTAさんの時間が増える</td><td>確認は毎朝10分まで、と先に決めます。段階2からは、危ないサインと個別相談の希望だけを見ます。</td></tr>
+        <tr><td class="k">LINEやAIの料金が変わる</td><td>LINEは2026年10月1日に追加メッセージの料金が改定されたばかりです。毎月の費用を確認画面に出し、関門ごとに見直します。</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 今週やること -->
+<section id="thisweek">
+  <div class="sec-head">
+    <h2>今週やること（段階0）</h2>
+    <p>担当は今の体制に合わせました。承認待ちの運用はなくなったので、各担当はそのまま進めて結果を社長に報告します。</p>
+  </div>
+  <div class="todo">
+    <div class="task"><span class="d">10/5（月）<small>今日</small></span><div class="w"><span class="owner">社長</span><span>この提案を進めるかを決める。「決めてほしいこと」の5つに答える</span></div></div>
+    <div class="task"><span class="d">10/6（火）<small>〜10/8（木）</small></span><div class="w"><span class="owner">社長 ＋ Claude</span><span>教科書の書き出し。下の「教科書づくりの10の質問」に、録音で話して答える（30分×3回）。文字起こしをClaudeが整理して、教科書の形にする</span></div></div>
+    <div class="task"><span class="d">10/6（火）</span><div class="w"><span class="owner">公式LINE担当 ＋ セッション・販売担当</span><span>無料セッション（9/26〜9/30）の参加者から10人を選び、下の招待文を送る。返事の締め切りは10/9（金）</span></div></div>
+    <div class="task"><span class="d">10/8（木）</span><div class="w"><span class="owner">社長 ＋ 制作部門</span><span>14日間の問いを決める（「14日間の流れ（案）」をもとに）。Day 7のグループZoomの日時を10/18（日）夜で決める</span></div></div>
+    <div class="task"><span class="d">10/9（金）</span><div class="w"><span class="owner">リサーチ担当</span><span>国内のAIコーチング・AI伴走サービスを5つ調べ、価格・続け方・評判を表にする</span></div></div>
+    <div class="task"><span class="d">10/10（土）<small>〜10/11（日）</small></span><div class="w"><span class="owner">Claude（開発担当）</span><span>教科書を下の「返事の下書き用の指示文」に入れて、10人分の記録の置き場所を作る。参加者に事前アンケートを送る</span></div></div>
+    <div class="task"><span class="d">10/12（月）<small>7:00</small></span><div class="w"><span class="owner">社長</span><span>Day 1 の問いを10人に送る。ここから14日間、返事の確認は1日30〜60分ほど</span></div></div>
+  </div>
+</section>
+
+<!-- 文面 -->
+<section id="templates">
+  <div class="sec-head">
+    <h2>そのまま使う文面</h2>
+    <p>「コピー」でそのまま使えます。</p>
+  </div>
+
+  <div class="tpl">
+    <div class="tpl-head"><h3>教科書づくりの10の質問</h3><button class="copy" type="button" data-target="t-book">コピー</button></div>
+    <pre class="copybox" id="t-book">【教科書づくりの質問】録音で、思いつくままに話してください。1問2〜3分が目安です。
+
+1. 相談に来た人に、最初に何を聞きますか？
+2. 「ゴールは今の外側に置く」を、初めての人にどう説明しますか？
+3. ゴールが小さすぎる人には、どう声をかけますか？
+4. 「どうせ無理」と言われたら、何と返しますか？
+5. お金のブロックがある人によく出る口ぐせは？ それにどう返しますか？
+6. やろうと思っても動けない人には、どう関わりますか？
+7. コーチとして、絶対に言わないこと・やらないことは？
+8. よく使うたとえ話や、ご自身の体験談は？
+9. 相談者が泣いたり、ひどく落ち込んだりしたとき、どうしますか？
+10. 14日後、相談者にどうなっていてほしいですか？</pre>
+  </div>
+
+  <div class="tpl">
+    <div class="tpl-head"><h3>10人への招待文</h3><span>公式LINEの個別チャットで送る</span><button class="copy" type="button" data-target="t-invite">コピー</button></div>
+    <pre class="copybox" id="t-invite">〇〇さん、先日は無料セッションに来てくださって、ありがとうございました。
+
+実はいま、セッションでお話ししたゴール設定の考え方を、毎日LINEで続けられる「14日間の伴走プログラム」を準備しています。
+正式に始める前に、10名さまだけ無料で体験していただき、感想を聞かせてもらえないかと考えています。
+
+・期間：10月12日（月）〜10月25日（日）の14日間
+・内容：毎朝7時にLINEで1つの問いが届きます。返信すると、コーチからフィードバックが返ってきます。1日5〜10分ほどです
+・10月18日（日）の夜に、参加者だけのZoom（30分）があります
+・最初と最後に、かんたんなアンケート（3分）をお願いします
+・返信の下書きにはAIを使い、すべて私が目を通してからお送りします
+
+ご興味があれば、このLINEに「参加します」とだけ返信してください。
+10月9日（金）までにお返事いただけると助かります。
+
+渡辺笙太（SHOTA）</pre>
+  </div>
+
+  <div class="tpl">
+    <div class="tpl-head"><h3>事前・事後アンケート</h3><span>Googleフォームなどに入れる</span><button class="copy" type="button" data-target="t-survey">コピー</button></div>
+    <pre class="copybox" id="t-survey">【事前アンケート（Day 1 の前）】
+1. 今いちばん叶えたいゴールは何ですか？（自由記述）
+2. そのゴールを「自分なら達成できる」と、どれくらい思えますか？（0〜10）
+3. そのゴールを考えると、どれくらいワクワクしますか？（0〜10）
+4. 今の毎日に、どれくらい満足していますか？（0〜10）
+5. お金について、どれくらい不安を感じていますか？（0〜10）
+
+【事後アンケート（Day 14 のあと）】
+1〜5. 事前と同じ質問
+6. 14日間で、いちばん変わったことは何ですか？（自由記述）
+7. いちばん役に立った日と、いちばん答えにくかった日は？
+8. 月9,800円で続けられるとしたら、続けたいですか？（はい／迷う／いいえ）
+9. このプログラムを友人にすすめたいと思いますか？（0〜10）
+10. AIの返事で、気になったところはありましたか？（自由記述）</pre>
+  </div>
+
+  <div class="tpl">
+    <div class="tpl-head"><h3>返事の下書き用の指示文（段階1）</h3><span>Claudeに貼って使う</span><button class="copy" type="button" data-target="t-prompt">コピー</button></div>
+    <pre class="copybox" id="t-prompt">あなたは、認知科学ベースのコーチ・渡辺笙太（SHOTA）のメソッドを学んだAIコーチです。
+14日間の伴走プログラムの参加者に送る返事の「下書き」を作ってください。送る前に、SHOTAが必ず目を通します。
+
+■守ること
+・返事は3〜6行。最後は問いかけか、今日できる小さな行動で終える
+・相手の言葉をまず受け止める。否定や説教はしない
+・「どうやるか」より先に「本当はどうしたいか」を聞く
+・ゴールは今の延長ではなく、今の外側に置くように促す
+・収入や健康について「必ず〜になる」と約束しない
+・医療やカウンセリングの代わりはしない
+・「死にたい」「消えたい」など命にかかわる言葉があれば、下書きの先頭に【要対応】と書き、公的な相談窓口を案内する文にする
+
+■教科書（SHOTAのメソッド）
+（ここに教科書を貼る）
+
+■この参加者の記録
+名前：
+今日は Day ：
+ゴール：
+これまでの気づき：
+
+■参加者からのメッセージ
+（ここに貼る）</pre>
+  </div>
+</section>
+
+<!-- 決めてほしいこと -->
+<section id="decide">
+  <div class="sec-head">
+    <h2>決めてほしいこと</h2>
+    <p>この5つが決まれば、今週の準備を始められます。それぞれに案を付けています。</p>
+  </div>
+  <div class="cards">
+    <div class="card"><h3>1. 段階0〜1を始めるか</h3><p>費用はほぼ0円で、かかるのはSHOTAさんの時間（教科書づくり約1.5時間、14日間の確認 1日30〜60分ほど）です。</p><span class="rec">案：始める</span></div>
+    <div class="card"><h3>2. 段階1の返事を、だれが確認するか</h3><p>AIの返事がSHOTAさんらしいかを見極める段階なので、本人が見るのがいちばん確かです。</p><span class="rec">案：社長が確認する</span></div>
+    <div class="card"><h3>3. プログラムの名前</h3><ul><li>SHOTA ゴール伴走</li><li>毎朝ひとつの問い</li><li>自由になる14日間</li></ul><span class="rec">案：段階1は仮の名前で始め、参加者の声を聞いて決める</span></div>
+    <div class="card"><h3>4. 継続コースの価格</h3><p>一般は月9,800円。段階2の最初の100人は、ずっとこの価格のままの「初期メンバー価格」にします。</p><span class="rec">案：初期メンバー 月4,980円</span></div>
+    <div class="card"><h3>5. AIにHealyを案内させないこと</h3><p>健康にかかわる高額な機器を、AIが勧めると誤解やトラブルのもとになります。</p><span class="rec">案：AIでは扱わず、これまでどおり人が対応</span></div>
+  </div>
+</section>
+
+<footer>
+  <p>このページの料金や仕様は、2026年10月5日時点で確認できた情報です。</p>
+  <ul>
+    <li><a href="https://aurant-technologies.com/blog/line-official-pricing-plan-2026/">LINE公式アカウントの料金プラン（2026年10月改定）</a></li>
+    <li><a href="https://help.linebiz.com/lineadshelp/s/article/L000001124?language=ja">メッセージ配信数としてカウントされるメッセージの種類（LINEヤフー for Business）</a></li>
+    <li><a href="https://enhanceit.jp/stripe-tesuryo-hikaku/">Stripeの手数料（2026年版）</a></li>
+    <li><a href="https://platform.claude.com/docs/en/about-claude/pricing">Claude APIの料金（Anthropic）</a></li>
+    <li><a href="https://coldiq.com/tools/delphi-ai">Delphiの料金プラン</a> ・ <a href="https://davidriha.com/blog/delphi-ai-review-2026-is-it-worth-it/">Delphiのサブスク販売機能について</a></li>
+  </ul>
+</footer>
+</div>
+
+<script>
+document.querySelectorAll('button.copy').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var el=document.getElementById(btn.dataset.target);
+    var text=el.innerText;
+    var label=btn.textContent;
+    function done(msg){btn.textContent=msg;setTimeout(function(){btn.textContent=label},1800)}
+    function fallback(){
+      var r=document.createRange();r.selectNodeContents(el);
+      var s=window.getSelection();s.removeAllRanges();s.addRange(r);
+      done('選択しました');
+    }
+    try{navigator.clipboard.writeText(text).then(function(){done('コピーしました')},fallback);}catch(e){fallback()}
+  });
+});
+</script>
