@@ -1,0 +1,631 @@
+<title>14日間 準備キット</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+/* 作業用のキット。上から「今週の予定 → 設定 → 文面 → 教科書 → 毎日の回し方」の順に、使う時期の早いものから並べる */
+:root{
+  --bg:#f3f6f5; --surface:#ffffff; --ink:#1f2626; --muted:#5d6969; --line:#dbe3e1;
+  --accent:#1f6670; --accent-soft:#e0eef0;
+  --gold:#85620f; --gold-soft:#f5edd9;
+  --ok:#2f7a55; --ok-soft:#e3f1e9;
+  --warn:#9a4a12; --warn-soft:#f8e9dc;
+  --code:#edf2f1;
+  --serif:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --sans:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#131919; --surface:#1c2424; --ink:#e8eeed; --muted:#a2afae; --line:#2e3939;
+    --accent:#7cc6cc; --accent-soft:#1d3335;
+    --gold:#e2c069; --gold-soft:#342c19;
+    --ok:#7fcfa3; --ok-soft:#1f3329;
+    --warn:#eaa36f; --warn-soft:#3a2a1c;
+    --code:#222c2c;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#131919; --surface:#1c2424; --ink:#e8eeed; --muted:#a2afae; --line:#2e3939;
+  --accent:#7cc6cc; --accent-soft:#1d3335;
+  --gold:#e2c069; --gold-soft:#342c19;
+  --ok:#7fcfa3; --ok-soft:#1f3329;
+  --warn:#eaa36f; --warn-soft:#3a2a1c;
+  --code:#222c2c;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.85;padding-inline:16px;padding-block:32px 64px}
+.wrap{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:52px}
+h1,h2,h3{font-family:var(--serif);text-wrap:balance;line-height:1.4;margin:0}
+h1{font-size:clamp(24px,5vw,34px)}
+h2{font-size:23px}
+h3{font-size:16px;font-family:var(--sans);font-weight:700}
+p{margin:0}
+a{color:var(--accent)}
+ul,ol{margin:0;padding-left:1.3em}
+li+li{margin-top:4px}
+.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:700}
+.meta{color:var(--muted);font-size:13px}
+.why{color:var(--muted);font-size:14px}
+.lead{max-width:64ch}
+header{display:flex;flex-direction:column;gap:14px;border-bottom:1px solid var(--line);padding-bottom:30px}
+section{display:flex;flex-direction:column;gap:18px;scroll-margin-top:16px}
+.sec-head{display:flex;flex-direction:column;gap:6px}
+.sec-head p{max-width:64ch}
+nav.toc{display:flex;flex-wrap:wrap;gap:8px}
+nav.toc a{font-size:13px;text-decoration:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:4px 12px;border-radius:999px}
+nav.toc a:hover{border-color:var(--accent);color:var(--accent)}
+nav.toc a:focus-visible,button.copy:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* 要点 */
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:12px}
+.facts div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.facts b{font-size:12px;color:var(--accent);letter-spacing:.06em}
+.facts span{font-size:14px;line-height:1.7;font-variant-numeric:tabular-nums}
+
+/* 確認してほしいこと */
+.confirm{background:var(--gold-soft);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.confirm h2{font-size:19px;color:var(--gold)}
+.confirm ol{font-size:14px}
+.confirm li b{color:var(--ink)}
+
+/* 予定 */
+.days{display:flex;flex-direction:column;gap:0;border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden}
+.day{display:grid;grid-template-columns:8.5em 1fr;gap:4px 16px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.day:last-child{border-bottom:none}
+.day .d{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.day .d small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.day ul{font-size:14px;padding-left:1.1em;min-width:0}
+.day.key{background:var(--accent-soft)}
+.who{display:inline-block;font-size:11.5px;font-weight:700;color:var(--accent);margin-right:4px}
+@media (max-width:520px){.day{grid-template-columns:1fr}}
+
+/* 設定手順 */
+.setups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:16px}
+.setup{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.setup h3{font-family:var(--serif);font-size:18px}
+.setup ol{font-size:14px}
+.setup .when{font-size:12.5px;color:var(--muted)}
+
+/* 表 */
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.04em;background:var(--code);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+td.k{font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+td.k small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+tr.hl td{background:var(--accent-soft)}
+.chg{display:inline-block;font-size:11px;font-weight:700;padding:0 7px;border-radius:4px;background:var(--gold-soft);color:var(--gold);white-space:nowrap;margin-left:4px}
+.chg.ok{background:var(--ok-soft);color:var(--ok)}
+
+/* 決まり */
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px}
+.rule{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.rule h3{font-size:15px}
+.rule p{font-size:14px}
+.rule.stop{border-color:var(--warn)}
+.rule.stop h3{color:var(--warn)}
+
+/* 流れ */
+.flow{display:flex;flex-direction:column;gap:8px}
+.step{display:grid;grid-template-columns:2.2em 1fr;gap:12px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 16px;font-size:14px}
+.step .n{width:2.2em;height:2.2em;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-variant-numeric:tabular-nums}
+.step.alert{border-color:var(--warn);background:var(--warn-soft)}
+.step.alert .n{background:var(--warn);color:var(--surface)}
+.step b{display:block}
+
+/* コピー枠 */
+.tpl{display:flex;flex-direction:column;gap:8px}
+.tpl-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.tpl-head h3{font-size:15px}
+.tpl-head span{font-size:12px;color:var(--muted)}
+.tpl-head .right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+pre.copybox{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:14px 16px;font-size:13.5px;line-height:1.9;white-space:pre-wrap;word-break:break-word;margin:0;font-family:var(--sans);color:var(--ink)}
+pre.copybox.long{max-height:520px;overflow-y:auto}
+button.copy{font:inherit;font-size:12px;border:1px solid var(--accent);background:transparent;color:var(--accent);padding:2px 12px;border-radius:999px;cursor:pointer;white-space:nowrap}
+button.copy:hover{background:var(--accent-soft)}
+.note{background:var(--warn-soft);border-radius:10px;padding:12px 16px;font-size:14px}
+.note b{color:var(--warn)}
+.okbox{background:var(--ok-soft);border-radius:10px;padding:12px 16px;font-size:14px}
+.okbox b{color:var(--ok)}
+
+footer{border-top:1px solid var(--line);padding-top:20px;display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--muted)}
+footer ul{padding-left:1.2em}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">AI伴走プログラム 段階1 ／ 10/6 準備面談のまとめ</div>
+  <h1>「思い込みの枠を外して、豊かに生きるゴールを見つける14日間」準備キット</h1>
+  <p class="meta">作成日 2026-10-06（火） ・ 対象 渡辺笙太（SHOTA）さま ・ 実施 10/13（火）〜10/26（月）</p>
+  <p class="lead">面談で決まったことを、使う順に並べました。上から順に進めれば、10/13（火）の朝にDay 1を届けられます。文面はどれも「コピー」でそのまま使えます。</p>
+  <div class="facts">
+    <div><b>期間</b><span>10/13（火）〜10/26（月）の14日間</span></div>
+    <div><b>参加者</b><span>10人（無料セッション参加者＋過去のクライアント・知人）</span></div>
+    <div><b>使うLINE</b><span>継続サポート用 https://lin.ee/wJt34qC</span></div>
+    <div><b>グループZoom</b><span>10/19（月）20:00〜（30分）</span></div>
+    <div><b>招待の締め切り</b><span>10/10（土）</span></div>
+  </div>
+  <nav class="toc" aria-label="目次">
+    <a href="#confirm">確認してほしいこと</a><a href="#schedule">今週の予定</a><a href="#setup">設定</a><a href="#invite">招待文</a><a href="#welcome">はじめのあいさつ</a><a href="#questions">14日間の問い</a><a href="#rules">AIの決まり</a><a href="#project">Claudeの指示文</a><a href="#book">教科書</a><a href="#daily">毎日の回し方</a><a href="#sheet">記録シート</a><a href="#survey">アンケート</a><a href="#gate">関門1</a>
+  </nav>
+</header>
+
+<!-- 確認 -->
+<section id="confirm" class="confirm">
+  <h2>確認してほしいこと（4つ）</h2>
+  <p>面談の答えに合わせるため、こちらで変えた点です。違っていれば教えてください。</p>
+  <ol>
+    <li><b>Day 1の問いを、SHOTAさんの第一声に変えました。</b>「今のお悩みやお困りごとは何ですか？ それがどんな状態になっていたら最高と言えますか？」（質問1の答え）</li>
+    <li><b>Day 11の問いを変えました。</b>案では「自分ならできると思える根拠を過去から集める」でしたが、「ゴールを達成するのに過去は一切関係ない」（質問4）と合わないためです。</li>
+    <li><b>Day 14の問いを、14日後のゴール（質問10）に合わせました。</b>現状の外側のゴールと、そこに向かうために必要なものを聞きます。</li>
+    <li><b>返信がない人を追いかけるかどうか。</b>案では、追いかけず記録だけにしています。want toの考え方に合わせました。</li>
+  </ol>
+</section>
+
+<!-- 今週の予定 -->
+<section id="schedule">
+  <div class="sec-head">
+    <h2>今週の予定</h2>
+    <p>担当の書いていないものは、すべてSHOTAさんです。LINEの通数は、10月の合計で約150通（無料枠200通の内）になります。</p>
+  </div>
+  <div class="days">
+    <div class="day"><span class="d">10/6（火）<small>今日</small></span><ul><li>このキットを読み、「確認してほしいこと」に答える</li><li>招待を送り始める（文面は2種類。<a href="#invite">招待文</a>）</li></ul></div>
+    <div class="day"><span class="d">10/7（水）</span><ul><li>招待を送り終える（12人前後に）</li><li>継続サポート用LINEの設定（<a href="#setup">設定</a>の1）</li><li>フォームズで事前・事後アンケートを作る（設定の2）</li><li>記録用のGoogleスプレッドシートを作る（設定の3）</li><li>Claudeアプリでプロジェクトを作る（設定の4）</li></ul></div>
+    <div class="day"><span class="d">10/8（木）<small>〜10/11（日）</small></span><ul><li>朝の音声を録る。Day 1〜3の3本は10/11（日）まで、残りは配信の前日までに（<a href="#questions">14日間の問い</a>に話す内容の目安あり）</li></ul></div>
+    <div class="day key"><span class="d">10/10（土）<small>締め切り</small></span><ul><li>参加者10人を確定する。友だち追加と「参加します」の一言を確認</li><li>記録シートに番号（P01〜P10）を振り、チャットタグ「14日間」を付ける</li><li>10/19（月）20:00のZoomのURLを作る</li></ul></div>
+    <div class="day"><span class="d">10/11（日）</span><ul><li>チャットタグオーディエンスを作る（使えるようになるまで時間がかかることがあるため、前日までに）</li><li>20:00に「はじめのあいさつ＋事前アンケート」を予約配信（<a href="#welcome">はじめのあいさつ</a>）</li></ul></div>
+    <div class="day"><span class="d">10/12（月・祝）</span><ul><li>事前アンケートの締め切り（夜まで）。答えを記録シートとClaudeの各会話に貼る</li><li>Day 1（問い＋音声）を10/13（火）7:00に予約配信</li></ul></div>
+    <div class="day key"><span class="d">10/13（火）<small>7:00</small></span><ul><li>Day 1が届く。ここから<a href="#daily">毎日の回し方</a>のとおり</li></ul></div>
+    <div class="day"><span class="d">10/18（日）</span><ul><li>Day 6の配信に、翌日のZoomのURLを入れる</li></ul></div>
+    <div class="day key"><span class="d">10/19（月）<small>20:00</small></span><ul><li>グループZoom（30分）</li></ul></div>
+    <div class="day"><span class="d">10/26（月）</span><ul><li>Day 14。配信に事後アンケートを入れる（締め切り 10/28（水））</li></ul></div>
+    <div class="day"><span class="d">10/29（木）<small>〜11/2（月）</small></span><ul><li>完走した人に、継続コースの優先案内をSHOTAさんから送る（AIの会話とは分ける）</li><li>結果をまとめ、11/2（月）に<a href="#gate">関門1</a>を判断する</li></ul></div>
+  </div>
+</section>
+
+<!-- 設定 -->
+<section id="setup">
+  <div class="sec-head">
+    <h2>設定</h2>
+    <p>10/7（水）にまとめて済ませる4つの準備です。管理画面の名前は変わることがあるので、見つからないときは近い名前の項目を探してください。</p>
+  </div>
+  <div class="setups">
+    <div class="setup">
+      <h3>1. 継続サポート用LINE</h3>
+      <p class="when">10/7（水）。オーディエンスだけ10/11（日）</p>
+      <ol>
+        <li>応答の設定で「チャット」をオンにする（参加者と1対1でやりとりするため）</li>
+        <li>スマホの「LINE公式アカウント」アプリで、このアカウントの通知をオンにする（命にかかわる内容にすぐ気づくため）</li>
+        <li>チャット画面でタグ「14日間」を作る。参加者から「参加します」が届いたら、その人にタグを付ける</li>
+        <li>オーディエンスの作成で「チャットタグオーディエンス」を選び、タグ「14日間」から作る（10人でも作れる）</li>
+        <li>毎日の配信は、メッセージ配信で配信先をこのオーディエンスに絞り、日時を指定して予約する</li>
+      </ol>
+      <p class="why">問いと音声は同じ配信に入れます。1回の配信は、吹き出しが複数でも1人1通と数えられます。</p>
+    </div>
+    <div class="setup">
+      <h3>2. フォームズ（アンケート）</h3>
+      <p class="when">10/7（水）</p>
+      <ol>
+        <li>「事前」と「事後」の2つのフォームを作る（質問は<a href="#survey">アンケート</a>）</li>
+        <li>最初の質問は「ニックネーム」にして、事前と事後で同じものを書いてもらう（前後を比べるため）</li>
+        <li>回答はCSVで書き出し、記録シートの「アンケート」タブに貼る</li>
+      </ol>
+    </div>
+    <div class="setup">
+      <h3>3. Googleスプレッドシート（記録）</h3>
+      <p class="when">10/7（水）</p>
+      <ol>
+        <li>タブを3つ作る：「参加者」「毎日の記録」「アンケート」（列は<a href="#sheet">記録シート</a>）</li>
+        <li>名前などの個人情報は、このシートだけに置く。共有はSHOTAさんだけにする</li>
+        <li>Claudeやリポジトリには、名前ではなく番号（P01〜）で書く</li>
+      </ol>
+    </div>
+    <div class="setup">
+      <h3>4. Claudeアプリのプロジェクト</h3>
+      <p class="when">10/7（水）</p>
+      <ol>
+        <li>Claudeアプリで新しいプロジェクト「14日間」を作る</li>
+        <li>プロジェクトの指示に、<a href="#project">Claudeの指示文</a>を貼る</li>
+        <li>プロジェクトのナレッジに、<a href="#book">教科書</a>と<a href="#questions">14日間の問い</a>の2つを入れる</li>
+        <li>参加者ごとに会話を1つ作り、名前を「P01」のように番号にする。最初に事前アンケートの答えを貼る</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- 招待文 -->
+<section id="invite">
+  <div class="sec-head">
+    <h2>招待文</h2>
+    <p>SHOTAさん本人から送ります。無料セッションの参加者には継続サポート用LINEか、つながっているLINEで。過去のクライアント・知人には、ふだん連絡しているLINEで送ってください。</p>
+  </div>
+  <div class="tpl">
+    <div class="tpl-head"><h3>A. 無料セッションの参加者へ</h3><div class="right"><button class="copy" type="button" data-target="t-inv-a">コピー</button></div></div>
+    <pre class="copybox" id="t-inv-a">〇〇さん、先日は無料セッションに来てくださって、ありがとうございました。
+
+いま「思い込みの枠を外して、豊かに生きるゴールを見つける14日間」というプログラムを準備しています。
+正式に始める前に、10名さまだけ無料で体験していただき、感想を聞かせてもらえないかと考えています。
+
+・期間：10月13日（火）〜10月26日（月）の14日間
+・内容：毎朝7時に、その日の問いと私からの短い音声がLINEで届きます。返信すると、私からお返事します。1日5〜10分ほどです
+・10月19日（月）20時から、参加者だけのZoom（30分）があります
+・最初と最後に、かんたんなアンケート（3分）をお願いします
+・お返事の下書きにはAIを使い、すべて私が目を通してからお送りします
+・お返事はその日のうちにお送りしますが、撮影などで翌日になる日もあります
+・最後まで続けてくださった方には、これから始める継続コースを、いちばん安い初期価格で優先してご案内します
+・感想や変化を、お名前を伏せてご紹介させていただくことがあります
+
+参加は、こちらの専用LINEで行います。
+https://lin.ee/wJt34qC
+友だち追加をしたら「参加します」とひとこと送ってください。
+10月10日（土）までにお返事いただけると助かります。
+
+渡辺笙太（SHOTA）</pre>
+  </div>
+  <div class="tpl">
+    <div class="tpl-head"><h3>B. 過去のクライアント・知人へ</h3><div class="right"><button class="copy" type="button" data-target="t-inv-b">コピー</button></div></div>
+    <pre class="copybox" id="t-inv-b">〇〇さん、お久しぶりです。SHOTAです。
+
+実はいま、新しいプログラムを作っていて、正式に始める前に、信頼できる方10名にだけ無料で体験してもらい、正直な感想を聞かせてもらいたいと思っています。
+
+「思い込みの枠を外して、豊かに生きるゴールを見つける14日間」
+
+・期間：10月13日（火）〜10月26日（月）の14日間
+・内容：毎朝7時に、その日の問いと私からの短い音声がLINEで届きます。返信すると、私からお返事します。1日5〜10分ほどです
+・10月19日（月）20時から、参加者だけのZoom（30分）があります
+・最初と最後に、かんたんなアンケート（3分）をお願いします
+・お返事の下書きにはAIを使い、すべて私が目を通してからお送りします
+・お返事はその日のうちにお送りしますが、撮影などで翌日になる日もあります
+・最後まで続けてくださった方には、これから始める継続コースを、いちばん安い初期価格で優先してご案内します
+・感想や変化を、お名前を伏せてご紹介させていただくことがあります
+
+遠慮のない感想をもらえるのが、いちばんありがたいです。
+参加は、こちらの専用LINEで行います。
+https://lin.ee/wJt34qC
+友だち追加をしたら「参加します」とひとこと送ってください。
+10月10日（土）までにお返事もらえると助かります。</pre>
+  </div>
+</section>
+
+<!-- はじめのあいさつ -->
+<section id="welcome">
+  <div class="sec-head">
+    <h2>はじめのあいさつ</h2>
+    <p>10/11（日）20:00に、チャットタグ「14日間」の10人へ予約配信します。アンケートのURLは、フォームズで作ったものに差しかえてください。</p>
+  </div>
+  <div class="tpl">
+    <div class="tpl-head"><h3>はじめのあいさつ＋事前アンケート</h3><div class="right"><button class="copy" type="button" data-target="t-welcome">コピー</button></div></div>
+    <pre class="copybox" id="t-welcome">「思い込みの枠を外して、豊かに生きるゴールを見つける14日間」にご参加いただき、ありがとうございます。
+始める前に、進め方をお伝えします。
+
+■10月13日（火）から毎朝7時に、その日の問いと、私からの短い音声が届きます
+■思いついたことを、いつでも自由に返信してください。正解はありません
+■返信には、その日のうちにお返事します（撮影などで翌日になる日もあります）
+■お返事の下書きにはAIを使い、すべて私が目を通してからお送りしています
+■10月19日（月）20時から、参加者だけのZoom（30分）があります。URLは前日にお送りします
+
+始める前に、こちらのアンケート（3分）にお答えください。
+締め切りは10月12日（月）の夜です。
+（事前アンケートのURL）
+
+10月13日（火）の朝から、よろしくお願いします。
+渡辺笙太（SHOTA）</pre>
+  </div>
+</section>
+
+<!-- 14日間の問い -->
+<section id="questions">
+  <div class="sec-head">
+    <h2>14日間の問い</h2>
+    <p>前日の夜に、問いと音声を予約配信します（配信は7:00）。音声の内容は目安です。非言語で届ける部分なので、話す中身はSHOTAさんが決めてください。</p>
+  </div>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>日</th><th>テーマ</th><th>その日の問い</th><th>音声（1分ほど）の目安</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Day 1<small>10/13（火）</small></td><td>いまの自分を知る</td><td>今のお悩みやお困りごとは何ですか？ それがどんな状態になっていたら最高と言えますか？<span class="chg">変更・確認</span></td><td>14日間で目指すところ。正解はないこと</td></tr>
+        <tr><td class="k">Day 2<small>10/14（水）</small></td><td>本当にやりたいこと</td><td>誰にも遠慮しなくていいなら、やりたいことを3つ挙げると？</td><td>want toとは何か（子どもが遊びに夢中になるように）</td></tr>
+        <tr><td class="k">Day 3<small>10/15（木）</small></td><td>ゴールを今の外側に置く</td><td>お金と時間の心配がまったくなかったら、その3つのうち、どれから始めますか？</td><td>理想的な現状と、現状の外側のゴール（平社員と社長の例）</td></tr>
+        <tr><td class="k">Day 4<small>10/16（金）</small></td><td>ゴールの臨場感と利他性</td><td>ゴールを叶えた自分の一日を、朝から夜まで3行で書くと？ そのとき、あなたのおかげで喜んでいる人はだれですか？<span class="chg ok">決定</span></td><td>利他性（自分の利益ではなく、他者の利益に少しでもなるように）</td></tr>
+        <tr><td class="k">Day 5<small>10/17（土）</small></td><td>「どうせ無理」の正体</td><td>今日「無理」と思った瞬間はいつ？ そのとき何と考えましたか？</td><td>ゴールを達成するのに、過去は一切関係ない</td></tr>
+        <tr><td class="k">Day 6<small>10/18（日）</small></td><td>思い込みの枠</td><td>「自分はこういう人間だ」と思っていることを3つ書くと？</td><td>自分で自分にかけている制限。明日のZoomの案内</td></tr>
+        <tr class="hl"><td class="k">Day 7<small>10/19（月）</small></td><td>中間ふりかえり</td><td>この1週間で変わったことは何ですか？ ＋ 20:00からグループZoom（30分）</td><td>前半のふりかえりと、今夜のZoomの案内</td></tr>
+        <tr><td class="k">Day 8<small>10/20（火）</small></td><td>お金の思い込み</td><td>お金について、子どものころによく聞いた言葉は？</td><td>お金のブロックとは何か</td></tr>
+        <tr><td class="k">Day 9<small>10/21（水）</small></td><td>仕事とお金のゴールを分ける</td><td>仕事で叶えたいことと、お金で叶えたいことを分けて書くと？ 何にいくら使いたくて、今と比べて実際にいくら足りませんか？<span class="chg ok">決定</span></td><td>お金のゴールは支出と収入のバランス感覚。具体的にすると、思ったより必要ない、またはもっと欲しくなる</td></tr>
+        <tr><td class="k">Day 10<small>10/22（木）</small></td><td>セルフトーク</td><td>今日、自分に言った口ぐせを1つ選んで書きかえると？</td><td>口ぐせが自分の枠をつくること</td></tr>
+        <tr><td class="k">Day 11<small>10/23（金）</small></td><td>エフィカシー</td><td>ゴールを叶えている未来の自分を想像してください。その自分なら「できる」と思える感覚は、0〜10でいくつですか？ 過去の経験は関係ありません。<span class="chg">変更・確認</span></td><td>エフィカシー（ゴールに対する自分の能力の自己評価）は、未来を基準に決める</td></tr>
+        <tr><td class="k">Day 12<small>10/24（土）</small></td><td>先のばしに気づく</td><td>やろうと思っていて、つい後回しにしていることは？ それは、誰かに止められてもやりたいことですか？<span class="chg ok">決定</span></td><td>本当にやりたいことは、止められてもやる</td></tr>
+        <tr><td class="k">Day 13<small>10/25（日）</small></td><td>最初の一歩</td><td>ゴールに向けて、今日10分でできることは何ですか？</td><td>小さく動くこと</td></tr>
+        <tr class="hl"><td class="k">Day 14<small>10/26（月）</small></td><td>現状の外側のゴール</td><td>いま見えている「現状の外側のゴール」は何ですか？ ぼんやりでも構いません。そのゴールに向かうために必要なものは、何だと思いますか？ ＋ 事後アンケート<span class="chg">変更・確認</span></td><td>現状の外側のゴールという感覚と、ここから先のこと</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="tpl">
+    <div class="tpl-head"><h3>Claudeのナレッジに入れる「14日間の問い」</h3><div class="right"><button class="copy" type="button" data-target="t-days">コピー</button></div></div>
+    <pre class="copybox long" id="t-days">【14日間の問い】
+Day 1（10/13 火）いまの自分を知る：今のお悩みやお困りごとは何ですか？ それがどんな状態になっていたら最高と言えますか？
+Day 2（10/14 水）本当にやりたいこと：誰にも遠慮しなくていいなら、やりたいことを3つ挙げると？
+Day 3（10/15 木）ゴールを今の外側に置く：お金と時間の心配がまったくなかったら、その3つのうち、どれから始めますか？
+Day 4（10/16 金）ゴールの臨場感と利他性：ゴールを叶えた自分の一日を、朝から夜まで3行で書くと？ そのとき、あなたのおかげで喜んでいる人はだれですか？
+Day 5（10/17 土）「どうせ無理」の正体：今日「無理」と思った瞬間はいつ？ そのとき何と考えましたか？
+Day 6（10/18 日）思い込みの枠：「自分はこういう人間だ」と思っていることを3つ書くと？
+Day 7（10/19 月）中間ふりかえり：この1週間で変わったことは何ですか？（20:00からグループZoom）
+Day 8（10/20 火）お金の思い込み：お金について、子どものころによく聞いた言葉は？
+Day 9（10/21 水）仕事とお金のゴールを分ける：仕事で叶えたいことと、お金で叶えたいことを分けて書くと？ 何にいくら使いたくて、今と比べて実際にいくら足りませんか？
+Day 10（10/22 木）セルフトーク：今日、自分に言った口ぐせを1つ選んで書きかえると？
+Day 11（10/23 金）エフィカシー：ゴールを叶えている未来の自分を想像してください。その自分なら「できる」と思える感覚は、0〜10でいくつですか？ 過去の経験は関係ありません。
+Day 12（10/24 土）先のばしに気づく：やろうと思っていて、つい後回しにしていることは？ それは、誰かに止められてもやりたいことですか？
+Day 13（10/25 日）最初の一歩：ゴールに向けて、今日10分でできることは何ですか？
+Day 14（10/26 月）現状の外側のゴール：いま見えている「現状の外側のゴール」は何ですか？ ぼんやりでも構いません。そのゴールに向かうために必要なものは、何だと思いますか？</pre>
+  </div>
+</section>
+
+<!-- AIの決まり -->
+<section id="rules">
+  <div class="sec-head">
+    <h2>AIの決まり</h2>
+    <p>面談の答えから決めた、返事の下書きをつくるときの決まりです。指示文と教科書の両方に入っています。</p>
+  </div>
+  <div class="rules">
+    <div class="rule stop"><h3>本人を否定しない</h3><p>言葉も、ゴールも、選んだことも否定しません。</p></div>
+    <div class="rule stop"><h3>ゴールを誘導しない</h3><p>中身を提案せず、評価もしません。「それは理想的な現状ですね」とも言いません。本人がwant toで見つけるのを待ちます。</p></div>
+    <div class="rule stop"><h3>こちらの利益を求めない</h3><p>商品、価格、セミナー、Healyの話はしません。継続コースの案内は、Day 14のあとにSHOTAさんから別に送ります。</p></div>
+    <div class="rule stop"><h3>家族を悪く言わない</h3><p>反対されて苦しい気持ちには寄り添わず、横に置きます。反対は正しい反応です。「それでもやりたい」気持ちのほうに寄り添います。「家族は間違っている」とは絶対に言いません。</p></div>
+    <div class="rule stop"><h3>慰めない、押さない</h3><p>落ち込んでいる人を慰めず、「頑張って」とも言いません。今までの自分でいるか、現状の外側へ向かうか、選ぶのは本人です。</p></div>
+    <div class="rule stop"><h3>体験談を使わない</h3><p>SHOTAさんの体験談は、SHOTAさんがケースごとに判断して話します。AIは合いそうな場面をメモで知らせるだけです。</p></div>
+    <div class="rule"><h3>命にかかわる内容は即日、直接</h3><p>AIは下書きを作らず【要対応】とだけ出します。SHOTAさんが即日で直接対応し、相談窓口もSHOTAさんから案内します。「翌日まとめて返す」の対象外です。</p></div>
+    <div class="rule"><h3>見立ては記録にだけ書く</h3><p>コンフォートゾーンの広さ、その中の位置、不快度（VXT）は、SHOTAさん向けのメモにだけ書きます。参加者には伝えません。</p></div>
+  </div>
+</section>
+
+<!-- 指示文 -->
+<section id="project">
+  <div class="sec-head">
+    <h2>Claudeの指示文</h2>
+    <p>Claudeアプリのプロジェクトの「指示」に、そのまま貼ります。</p>
+  </div>
+  <div class="tpl">
+    <div class="tpl-head"><h3>プロジェクトの指示</h3><div class="right"><button class="copy" type="button" data-target="t-project">コピー</button></div></div>
+    <pre class="copybox long" id="t-project">あなたは、認知科学ベースのコーチ・渡辺笙太（SHOTA）が行う「思い込みの枠を外して、豊かに生きるゴールを見つける14日間」で、参加者への返事の下書きを作るアシスタントです。
+下書きは、SHOTAが目を通して直してから、SHOTAとして参加者に送ります。参加者には、下書きにAIを使っていることを伝えてあります。
+
+ナレッジの「教科書」と「14日間の問い」に従ってください。特に、次のことを必ず守ってください。
+
+■絶対にしないこと
+・参加者を否定しない
+・ゴールの中身を提案しない、誘導しない、評価しない（「それは理想的な現状ですね」とも言わない）
+・商品、価格、セミナー、Healyなど、こちらの利益になる話をしない
+・家族や友人を悪く言わない（「家族は間違っている」とは絶対に言わない）
+・SHOTAの体験談を作ったり使ったりしない
+・慰めたり、「頑張って」と背中を押したりしない
+
+■返事の書き方
+・3〜6行。最後は問いかけで終える。問いは1つ、多くても2つ
+・専門用語（エフィカシー、コンフォートゾーン、理想的な現状など）は、短い説明を付けて使う
+・場面ごとの返し方は、教科書の「場面ごとの返し方」に従う
+
+■命にかかわる内容があったとき
+「死にたい」「消えたい」など命にかかわる内容があれば、返事の下書きは作らず、先頭に次の一文だけを書く。
+【要対応：SHOTAさんがすぐ直接対応してください】
+相談窓口の案内も書かない（SHOTAが直接対応し、そのあとSHOTAから案内する）
+
+■出力の形
+【下書き】
+（参加者に送る文面）
+
+【SHOTAさんへのメモ】（参加者には送らない）
+・見立て：コンフォートゾーンの広さ／その中のどのあたりにいるか／不快度
+・ゴールの状態：まだ見えていない／理想的な現状／現状の外側（ぼんやり）／現状の外側（はっきり）
+・体験談が合いそうな場面：あれば一言
+・気になる点：あれば
+
+■貼り付けの形
+SHOTAは参加者ごとに会話を分け、次の形で貼ります。
+Day ◯（◯月◯日）
+参加者のメッセージ：（本文）
+最初の会話では、参加者の番号（P01など）と事前アンケートの答えを貼ります。</pre>
+  </div>
+</section>
+
+<!-- 教科書 -->
+<section id="book">
+  <div class="sec-head">
+    <h2>教科書（第1版）</h2>
+    <p>面談の10の質問への答えを、AIが使える形にまとめました。プロジェクトのナレッジに入れます。運用しながら、直した点をここに書き足していきます。</p>
+  </div>
+  <div class="tpl">
+    <div class="tpl-head"><h3>SHOTAメソッド 教科書 第1版</h3><div class="right"><span>2026-10-06</span><button class="copy" type="button" data-target="t-book">コピー</button></div></div>
+    <pre class="copybox long" id="t-book">【SHOTAメソッド 教科書 第1版（2026-10-06）】
+
+■1. この14日間のゴール
+・現状の外側のゴールが見つかっていること。はっきりでなくても、ぼんやりでよい
+・「現状の外側のゴール」という感覚がわかること
+・そのゴールに向かうために必要なものを理解していること
+
+■2. コーチの立ち位置
+・何があっても100%参加者の味方。参加者の利益100%の立ち位置をとる
+・本人を否定しない
+・コーチ側の利益を求めない
+・ゴールに向かうことで、家族や友人など身近な人から否定されても、コーチだけは味方であり続ける
+・すべての発言と行動が、この姿勢に準ずること
+
+■3. 大前提：言葉で誘導しない
+・コーチングでは、言葉でのアプローチには限界がある。鍵は非言語のアプローチ
+・言葉や文字でゴールを誘導すると、誰かに定められたゴールになってしまう。本人がwant toで設定する、現状の外側のゴールという本来の行き先から大きくそれる
+・コーチがいつも見ているのは、その人がどこで自分に制限をかけているか（枠組み）。その人の未来に広がるすべての可能世界のうち、どの領域までがコンフォートゾーンになっているか
+・その枠の少しでも外側にゴールを置けるように、相手の内省言語に訴えかける
+・AIの役割は、問いかけと受け止めだけ。非言語の部分（毎朝の音声、Zoom、個別の対応）はSHOTAが担う
+
+■4. 言葉の意味
+・理想的な現状：今の延長にあるゴール。多くの人は、どれだけ大きな目標や夢を掲げていても、コーチングの視点では理想的な現状でしかない。例：大企業の平社員が「頑張って社長に出世するぞ」と言うこと
+・現状の外側のゴール：想像もできないようなゴール。自分一人では見つけられない。だからコーチがいる
+・利他性：現状の外側の大きなゴールには、必ず持たせる。「誰かの役に立つこと、社会のためになることを。自分の利益ではなく、他者の利益に少しでもなるように」
+・エフィカシー：ゴールを叶えるための、今の自分の能力についての自己評価
+・want to：人から止められてもやりたいこと。子どもが遊びに夢中になるように、時間を忘れて夢中でできること
+・コーチの役割：現状の外側にゴールを設定すること。そして、エフィカシーを上げること
+
+■5. 場面ごとの返し方
+5-1 最初（Day 1）
+・聞くこと：「今のお悩みやお困りごとは何ですか？」「それがどんな状態になっていたら最高と言えますか？」（シンプルに聞く）
+・答えから、コンフォートゾーンの広さ、その中のどのあたりにいるか、理想の未来と今のあいだで何を不快と感じているか（不快度、苫米地理論でいうVXT）を見立てる
+・見立ては、かける言葉を変えるためではなく、SHOTAが今後の判断基準として把握するためのもの。参加者には伝えず、メモにだけ書く
+
+5-2 「無理」「どうせ無理」と言われたとき
+・「無理」は、ゴールを叶えるための今の自己能力の評価
+・ゴールを達成するのに、過去は一切関係ないと伝える
+・そのうえで「未来の自分を想像しても、それが無理だと感じますか？」と聞く
+・判断の基準を、過去から未来にずらす
+・例：「そう感じたんですね。ゴールを叶えるのに、これまでの過去は一切関係ありません。そのうえで聞かせてください。ゴールを叶えた未来の自分を想像してみても、それは無理だと感じますか？」
+
+5-3 やろうと思っても動けないとき（先のばし）
+・理由はシンプルで、それをやりたくないと思っているから
+・本当にやりたいことなら、人から止められてでもやる。子どもが遊びに夢中になるのと同じ
+・背中は押さない。「それは、誰かに止められてもやりたいことですか？」と聞く
+
+5-4 「お金がない」「お金が回らない」と言われたとき
+・まず、仕事のゴールとお金のゴールをしっかり分けてもらう
+・お金のゴールは、支出と収入のバランス感覚。何にいくら使いたくて、それがどれくらい足りないのかを具体的にしてもらう
+・具体的にしないまま「お金がない」と言っている人が多い。具体的にすると、思っていたより必要ない、または足りていると思っていたが実はもっと欲しい、となることが多い
+
+5-5 ひどく落ち込んでいるとき（命にかかわらない場合）
+・寄り添わない。優しく寄り添うことと、今の自分を現状の外側に持っていくことはイコールにならない
+・今までの自分のほうがいいなら、それを選んでよい。それも、人から止められてもやりたいこと
+・例：「そう感じているんですね。ひとつ聞かせてください。今までの自分のままでいるのと、現状の外側のゴールに向かうのと、本当にやりたいのはどちらですか？ どちらを選んでも、それはあなたが決めていいことです。」
+
+5-6 家族や友人に反対されているとき
+・反対されて苦しい気持ちには寄り添わない。反対されるのは正しい反応なので、一旦横に置く
+・「それでも本人がやりたい」という気持ちのほうに寄り添う
+・「家族は間違っている」とは絶対に言わない
+
+5-7 命にかかわる内容があったとき
+・AIは返事を作らない。【要対応】としてSHOTAに知らせる
+・SHOTAが即日で直接対応し、そのあとSHOTAから相談窓口を案内する
+
+■6. SHOTA向けのメモに書くこと（参加者には見せない）
+・見立て：コンフォートゾーンの広さ、その中の位置、不快度
+・ゴールの状態：まだ見えていない／理想的な現状／現状の外側（ぼんやり）／現状の外側（はっきり）
+・体験談が合いそうな場面（体験談そのものは書かない。どの話をするかはSHOTAが判断する）
+・気になる点
+
+■7. 文章のきまり
+・3〜6行。最後は問いかけで終える。問いは1つ、多くても2つ
+・専門用語は、短い説明を付けて使う
+・慰めの言葉、「頑張って」「〜すべき」は使わない</pre>
+  </div>
+</section>
+
+<!-- 毎日の回し方 -->
+<section id="daily">
+  <div class="sec-head">
+    <h2>毎日の回し方（10/13〜10/26）</h2>
+    <p>1日30〜60分ほどの見込みです。返せない日は翌日にまとめて返します。命にかかわる内容だけは例外です。</p>
+  </div>
+  <div class="flow">
+    <div class="step"><span class="n">1</span><div><b>前日の夜：翌日の問いを予約する</b>問いと音声を1つの配信に入れ、配信先をチャットタグ「14日間」のオーディエンスに絞って、7:00に予約します。</div></div>
+    <div class="step"><span class="n">2</span><div><b>返信が届いたら：Claudeで下書きを作る</b>LINEのチャットで読み、Claudeのプロジェクトでその人の会話（P01など）に「Day ◯」と本文を貼ります。</div></div>
+    <div class="step"><span class="n">3</span><div><b>下書きを直して送る</b>【下書き】を自分の言葉に直して、LINEのチャットで送ります。直した点のうち、ほかの人にも当てはまるものは教科書に書き足します。</div></div>
+    <div class="step"><span class="n">4</span><div><b>記録シートに1行書く</b>【SHOTAさんへのメモ】の見立てとゴールの状態を、「毎日の記録」タブに写します。</div></div>
+    <div class="step alert"><span class="n">!</span><div><b>【要対応】が出たら：その日のうちに直接対応する</b>撮影中でも、気づいた時点で本人に直接連絡します。相談窓口の案内もSHOTAさんからします。</div></div>
+  </div>
+  <div class="okbox"><b>返信がない人：</b>追いかけず、記録シートに「返信なし」とだけ書く案です（「確認してほしいこと」の4）。</div>
+</section>
+
+<!-- 記録シート -->
+<section id="sheet">
+  <div class="sec-head">
+    <h2>記録シート（Googleスプレッドシート）</h2>
+    <p>個人情報はこのシートにだけ置きます。</p>
+  </div>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>タブ</th><th>列</th></tr></thead>
+      <tbody>
+        <tr><td class="k">参加者</td><td>番号（P01〜）／名前／LINEの表示名／区分（セッション参加者・知人）／友だち追加済み／タグ済み／事前アンケート済み／事後アンケート済み／名前を伏せた紹介の許可／名前・顔出しの許可／完走／メモ</td></tr>
+        <tr><td class="k">毎日の記録</td><td>日付／Day／番号／返信あり・なし／本人の言葉（要点）／送った返事（要点）／見立て（コンフォートゾーンの広さ・位置・不快度）／ゴールの状態／要対応／体験談が合いそうな場面／メモ</td></tr>
+        <tr><td class="k">アンケート</td><td>フォームズから書き出したCSVを、事前・事後で並べて貼る</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- アンケート -->
+<section id="survey">
+  <div class="sec-head">
+    <h2>アンケート（フォームズ）</h2>
+    <p>事後アンケートには、14日後のゴール（質問10）に合わせた質問を足しました。</p>
+  </div>
+  <div class="tpl">
+    <div class="tpl-head"><h3>事前・事後アンケートの質問</h3><div class="right"><button class="copy" type="button" data-target="t-survey">コピー</button></div></div>
+    <pre class="copybox long" id="t-survey">【事前アンケート（10/11〜10/12）】
+1. ニックネーム（事後アンケートでも同じものを書いてください）
+2. 今いちばん叶えたいゴールは何ですか？（自由記述）
+3. そのゴールを「自分なら達成できる」と、どれくらい思えますか？（0〜10）
+4. そのゴールを考えると、どれくらいワクワクしますか？（0〜10）
+5. 今の毎日に、どれくらい満足していますか？（0〜10）
+6. お金について、どれくらい不安を感じていますか？（0〜10）
+
+【事後アンケート（10/26〜10/28）】
+1. ニックネーム（事前アンケートと同じもの）
+2〜6. 事前と同じ質問
+7. 「現状の外側のゴール」は見つかりましたか？（はっきり見つかった／ぼんやり見つかった／まだ見つかっていない）
+8. 「今の延長のゴール（理想的な現状）」と「現状の外側のゴール」の違いが分かりますか？（分かる／なんとなく分かる／分からない）
+9. そのゴールに向かうために必要なものは、何だと思いますか？（自由記述）
+10. 14日間で、いちばん変わったことは何ですか？（自由記述）
+11. いちばん役に立った日と、いちばん答えにくかった日は？（自由記述）
+12. 月9,800円で続けられるとしたら、続けたいですか？（はい／迷う／いいえ）
+13. このプログラムを友人にすすめたいと思いますか？（0〜10）
+14. 返事の内容で、気になったところはありましたか？（自由記述）
+15. 感想を、お名前を伏せて紹介してもよいですか？（はい／いいえ）</pre>
+  </div>
+</section>
+
+<!-- 関門1 -->
+<section id="gate">
+  <div class="sec-head">
+    <h2>関門1（11/2（月）に判断）</h2>
+    <p>提案書の基準に、14日後のゴール（質問10）を足した案です。集計は「セッション参加者」と「知人」に分けて見ます。</p>
+  </div>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>見ること</th><th>基準（案）</th><th>どこで見るか</th></tr></thead>
+      <tbody>
+        <tr><td class="k">最後まで続いたか</td><td>10人中7人以上がDay 14まで返信した</td><td>毎日の記録</td></tr>
+        <tr><td class="k">毎日返しているか</td><td>その日の問いに返した人の割合が、平均60%以上</td><td>毎日の記録</td></tr>
+        <tr class="hl"><td class="k">現状の外側のゴール<span class="chg">追加</span></td><td>10人中7人以上が、ぼんやりでも「見つかった」と答えた</td><td>事後アンケート7</td></tr>
+        <tr><td class="k">「できる」の感覚</td><td>平均で2点以上上がった</td><td>アンケート3（事前と事後）</td></tr>
+        <tr><td class="k">お金を払って続けたいか</td><td>「月9,800円でも続けたい」が3人以上</td><td>事後アンケート12</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <p>関連する資料</p>
+  <ul>
+    <li><a href="https://claude.ai/artifact/UTVyBTPh2C1CJ6igoUtoGk">AI伴走プログラム 提案書</a>（リポジトリでは 提案/2026-10-05_AI伴走プログラム.html）</li>
+    <li>面談の記録：提案/2026-10-06_AI伴走_準備面談メモ.md</li>
+    <li><a href="https://linestep.jp/2025/07/16/line-official-account-target-reach/">チャットタグオーディエンスに人数の下限がないこと</a></li>
+  </ul>
+</footer>
+</div>
+
+<script>
+document.querySelectorAll('button.copy').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var el=document.getElementById(btn.dataset.target);
+    var text=el.innerText;
+    var label=btn.textContent;
+    function done(msg){btn.textContent=msg;setTimeout(function(){btn.textContent=label},1800)}
+    function fallback(){
+      var r=document.createRange();r.selectNodeContents(el);
+      var s=window.getSelection();s.removeAllRanges();s.addRange(r);
+      done('選択しました');
+    }
+    try{navigator.clipboard.writeText(text).then(function(){done('コピーしました')},fallback);}catch(e){fallback()}
+  });
+});
+</script>
