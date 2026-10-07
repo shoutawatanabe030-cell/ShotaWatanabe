@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>14日間 はじまる前に</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=block">
+<style>
+/* 参加者に配るA4縦のPDF。1ページ1テーマで、上から読めば14日間の全体が分かる順にする */
+@page{size:A4;margin:0}
+:root{
+  --bg:#f3f6f5; --paper:#ffffff; --ink:#1f2626; --muted:#5d6969; --line:#dbe3e1;
+  --accent:#1f6670; --accent-soft:#e0eef0; --deep:#16474e;
+  --gold:#85620f; --gold-soft:#f5edd9;
+  --serif:"Shippori Mincho","Yu Mincho","Hiragino Mincho ProN",serif;
+  --sans:"Zen Kaku Gothic New","Yu Gothic","Hiragino Sans",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:11.5pt;line-height:1.95;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page{width:210mm;height:297mm;padding:22mm 20mm 18mm;position:relative;overflow:hidden;page-break-after:always;display:flex;flex-direction:column;gap:9mm}
+.page:last-child{page-break-after:auto}
+.folio{position:absolute;bottom:10mm;left:20mm;right:20mm;display:flex;justify-content:space-between;font-size:8.5pt;color:var(--muted);letter-spacing:.08em}
+h1,h2,h3{font-family:var(--serif);font-weight:700;line-height:1.45}
+h2{font-size:21pt;color:var(--deep)}
+h3{font-size:13pt}
+.eyebrow{font-size:9pt;letter-spacing:.24em;color:var(--accent);font-weight:700}
+.lead{font-size:12pt}
+.muted{color:var(--muted)}
+.head{display:flex;flex-direction:column;gap:2mm}
+
+/* 表紙 */
+.cover{background:var(--deep);color:#f3f6f5;justify-content:space-between;padding:26mm 22mm 22mm}
+.cover .eyebrow{color:#9fd3d8}
+.cover h1{font-size:30pt;line-height:1.5;color:#ffffff}
+.cover .sub{font-family:var(--serif);font-size:14pt;color:#cfe7e9}
+.cover .dates{display:flex;gap:6mm;align-items:baseline;font-size:12pt}
+.cover .dates b{font-family:var(--serif);font-size:22pt;color:#ffffff;font-weight:700}
+.cover .rule{width:24mm;height:1.2mm;background:#e2c069}
+.cover .from{font-size:11pt;color:#cfe7e9}
+.cover .from b{font-family:var(--serif);font-size:15pt;color:#ffffff}
+.ring{position:absolute;right:-40mm;top:40mm;width:150mm;height:150mm;border-radius:50%;border:1.2mm solid rgba(226,192,105,.35)}
+.ring.two{right:-10mm;top:70mm;width:90mm;height:90mm;border-color:rgba(159,211,216,.35)}
+.cover > *{position:relative}
+
+/* 目指すところ */
+.goals{display:flex;flex-direction:column;gap:4mm}
+.goal{display:grid;grid-template-columns:14mm 1fr;gap:5mm;align-items:start;background:var(--accent-soft);border-radius:4mm;padding:5mm 6mm}
+.goal .n{font-family:var(--serif);font-size:22pt;color:var(--accent);line-height:1}
+.goal p{font-size:11.5pt}
+.goal b{display:block;font-family:var(--serif);font-size:13.5pt;margin-bottom:1mm}
+.quote{border-left:1.2mm solid var(--gold);padding:2mm 0 2mm 6mm;font-family:var(--serif);font-size:13.5pt;line-height:1.9}
+
+/* キーワード */
+.keys{display:flex;flex-direction:column;gap:5mm}
+.key{border:0.4mm solid var(--line);border-radius:4mm;padding:5mm 6mm;display:flex;flex-direction:column;gap:1.5mm}
+.key .tag{font-size:8.5pt;letter-spacing:.16em;color:var(--accent);font-weight:700}
+.key h3{color:var(--deep)}
+.key p{font-size:11pt}
+
+/* 地図 */
+.weeks{display:grid;grid-template-columns:1fr 1fr;gap:6mm}
+.week{display:flex;flex-direction:column;gap:3mm}
+.week h3{font-size:12pt;color:var(--accent)}
+.week h3 small{display:block;font-family:var(--sans);font-size:9pt;color:var(--muted);font-weight:500}
+.days{list-style:none;display:flex;flex-direction:column;gap:2mm}
+.days li{display:grid;grid-template-columns:15mm 1fr;gap:3mm;align-items:baseline;border-bottom:0.3mm dashed var(--line);padding-bottom:1.6mm;font-size:10.5pt}
+.days li span{font-weight:700;color:var(--accent);font-size:9.5pt;letter-spacing:.04em}
+.days li.hl{background:var(--gold-soft);border-radius:2mm;border-bottom:none;padding:1.2mm 2mm}
+
+/* 一日の流れ・日程 */
+.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm}
+.flow div{background:var(--accent-soft);border-radius:4mm;padding:5mm;display:flex;flex-direction:column;gap:1.5mm}
+.flow b{font-family:var(--serif);font-size:13pt;color:var(--deep)}
+.flow small{font-size:9pt;color:var(--accent);font-weight:700;letter-spacing:.12em}
+.flow p{font-size:10.5pt;line-height:1.8}
+.timeline{display:flex;flex-direction:column;border-left:0.6mm solid var(--accent);margin-left:3mm}
+.timeline div{position:relative;padding:0 0 4mm 7mm}
+.timeline div::before{content:"";position:absolute;left:-2.3mm;top:2.2mm;width:4mm;height:4mm;border-radius:50%;background:var(--paper);border:0.6mm solid var(--accent)}
+.timeline div.big::before{background:var(--accent)}
+.timeline b{font-variant-numeric:tabular-nums}
+
+/* 約束 */
+.promise{background:var(--deep);color:#f3f6f5;border-radius:5mm;padding:7mm 8mm;display:flex;flex-direction:column;gap:3mm}
+.promise h3{color:#ffffff;font-size:15pt}
+.promise p{font-size:11pt;color:#dcecee}
+.notes{display:flex;flex-direction:column;gap:2mm;font-size:10pt;color:var(--muted)}
+.notes li{margin-left:5mm}
+
+/* 準備 */
+.check{list-style:none;display:flex;flex-direction:column;gap:4mm}
+.check li{display:grid;grid-template-columns:9mm 1fr;gap:4mm;align-items:start}
+.check .box{width:7mm;height:7mm;border:0.6mm solid var(--accent);border-radius:1.5mm;margin-top:1.2mm}
+.check b{font-family:var(--serif);font-size:13pt;display:block}
+.check p{font-size:10.5pt;color:var(--muted)}
+.closing{margin-top:auto;text-align:center;display:flex;flex-direction:column;gap:3mm;align-items:center}
+.closing p.big{font-family:var(--serif);font-size:17pt;color:var(--deep);line-height:1.7}
+.closing .sign{font-family:var(--serif);font-size:12pt}
+</style>
+</head>
+<body>
+
+<!-- 1 表紙 -->
+<section class="page cover">
+  <div class="ring"></div><div class="ring two"></div>
+  <div class="eyebrow">WELCOME ／ はじまる前に読む資料</div>
+  <div style="display:flex;flex-direction:column;gap:7mm">
+    <div class="rule"></div>
+    <h1>思い込みの枠を外して、<br>豊かに生きるゴールを<br>見つける14日間</h1>
+    <p class="sub">あなたの「本当はこうしたい」を、<br>14日かけて言葉にしていく時間です。</p>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8mm">
+    <div class="dates"><b>10.13</b>火<span>―</span><b>10.26</b>月</div>
+    <p class="from">ご案内　<b>渡辺笙太（SHOTA）</b></p>
+  </div>
+</section>
+
+<!-- 2 ようこそ -->
+<section class="page">
+  <div class="head">
+    <div class="eyebrow">01　ようこそ</div>
+    <h2>この14日間で、目指すところ</h2>
+  </div>
+  <p class="lead">ご参加いただき、ありがとうございます。これまで600人以上の方のお話を、セッションで聴いてきました。そこで学び続けている脳と心のしくみの考え方を、毎日ひとつの問いにして、14日間でお届けします。</p>
+  <div class="goals">
+    <div class="goal"><span class="n">1</span><p><b>「現状の外側のゴール」が見つかる</b>今の毎日の延長ではない、ワクワクするゴール。はっきりでなくても、ぼんやりで大丈夫です。</p></div>
+    <div class="goal"><span class="n">2</span><p><b>その感覚が、自分でわかる</b>「今の延長のゴール」と「現状の外側のゴール」は、何がちがうのか。14日かけて、体で分かっていきます。</p></div>
+    <div class="goal"><span class="n">3</span><p><b>そこへ向かうために必要なものが見える</b>ゴールに近づくために、何が要るのか。最後の日に、あなた自身の言葉で書きます。</p></div>
+  </div>
+  <p class="quote">問いに、正解はありません。<br>うまく書こうとしなくて大丈夫です。<br>思いついたことを、そのまま送ってください。</p>
+  <div class="folio"><span>14日間 はじまる前に</span><span>2</span></div>
+</section>
+
+<!-- 3 キーワード -->
+<section class="page">
+  <div class="head">
+    <div class="eyebrow">02　先に知っておくと、もっと楽しめる</div>
+    <h2>14日間に出てくる、4つの言葉</h2>
+  </div>
+  <p class="lead">毎朝の問いの裏には、脳と心のしくみの考え方があります。むずかしく覚える必要はありません。「そういう見方があるんだ」くらいで読んでください。</p>
+  <div class="keys">
+    <div class="key"><span class="tag">KEY 1</span><h3>コンフォートゾーン</h3><p>自分が心地よくいられる範囲のことです。新しいことを始めても、いつの間にか元に戻ってしまう。それは意志が弱いからではなく、心と体が「元の場所」に戻ろうとする、もともとの働きです。</p></div>
+    <div class="key"><span class="tag">KEY 2</span><h3>エフィカシー</h3><p>ゴールを「自分なら達成できる」と思える感覚です。ゴールを達成するのに、過去は一切関係ありません。過去の実績ではなく、未来の自分を基準に考えます。</p></div>
+    <div class="key"><span class="tag">KEY 3</span><h3>want to（本当にやりたいこと）</h3><p>人から止められてもやりたいこと。子どもが遊びに夢中になるように、時間を忘れてできることです。「〜しなければならない」から決めたゴールとは、まったく別のものです。</p></div>
+    <div class="key"><span class="tag">KEY 4</span><h3>スコトーマ（心の盲点）</h3><p>目の前にあるのに、脳が大事だと思っていないために見えていないもの。自分にとって大事なものが変わると、それまで見えなかったものが見えはじめます。</p></div>
+  </div>
+  <div class="folio"><span>14日間 はじまる前に</span><span>3</span></div>
+</section>
+
+<!-- 4 地図 -->
+<section class="page">
+  <div class="head">
+    <div class="eyebrow">03　14日間の地図</div>
+    <h2>毎日ひとつ、テーマが届きます</h2>
+  </div>
+  <p class="lead">前半は「自分を知り、本当にやりたいことを見つける」1週間。後半は「お金や口ぐせの思い込みに気づき、最初の一歩を決める」1週間です。問いの中身は、その日の朝のお楽しみです。</p>
+  <div class="weeks">
+    <div class="week">
+      <h3>WEEK 1<small>自分を知り、やりたいことを見つける</small></h3>
+      <ul class="days">
+        <li><span>Day 1</span>いまの自分を知る</li>
+        <li><span>Day 2</span>本当にやりたいこと</li>
+        <li><span>Day 3</span>ゴールを今の外側に置く</li>
+        <li><span>Day 4</span>ゴールをリアルに感じる</li>
+        <li><span>Day 5</span>「どうせ無理」の正体</li>
+        <li><span>Day 6</span>思い込みの枠</li>
+        <li class="hl"><span>Day 7</span>中間ふりかえり＋参加者だけのZoom</li>
+      </ul>
+    </div>
+    <div class="week">
+      <h3>WEEK 2<small>思い込みに気づき、一歩を決める</small></h3>
+      <ul class="days">
+        <li><span>Day 8</span>お金の思い込み</li>
+        <li><span>Day 9</span>仕事とお金のゴールを分ける</li>
+        <li><span>Day 10</span>口ぐせ（セルフトーク）</li>
+        <li><span>Day 11</span>未来の自分の「できる」</li>
+        <li><span>Day 12</span>先のばしに気づく</li>
+        <li><span>Day 13</span>最初の一歩</li>
+        <li class="hl"><span>Day 14</span>現状の外側のゴール</li>
+      </ul>
+    </div>
+  </div>
+  <div class="flow">
+    <div><small>MORNING</small><b>朝7時に届く</b><p>その日の問いと、私からの1分ほどの音声がLINEに届きます。</p></div>
+    <div><small>ANYTIME</small><b>好きなときに返す</b><p>思いついたことを、いつでも返信してください。1日5〜10分ほどです。</p></div>
+    <div><small>REPLY</small><b>お返事が届く</b><p>その日のうちにお返事します。撮影などで翌日になる日もあります。</p></div>
+  </div>
+  <div class="folio"><span>14日間 はじまる前に</span><span>4</span></div>
+</section>
+
+<!-- 5 日程と約束 -->
+<section class="page">
+  <div class="head">
+    <div class="eyebrow">04　日程と、私からの約束</div>
+    <h2>これからの流れ</h2>
+  </div>
+  <div class="timeline">
+    <div><b>10月11日（日）20時</b>　進め方のご案内と、事前アンケート（2分）が届きます</div>
+    <div><b>10月12日（月）夜まで</b>　事前アンケートにお答えください</div>
+    <div class="big"><b>10月13日（火）7時</b>　Day 1 がはじまります</div>
+    <div class="big"><b>10月19日（月）20時</b>　参加者だけのZoom（30分）。URLは前日にお送りします</div>
+    <div class="big"><b>10月26日（月）</b>　Day 14。最後のアンケート（3分）をお願いします</div>
+  </div>
+  <div class="promise">
+    <h3>何があっても、私は100%あなたの味方です</h3>
+    <p>あなたの言葉も、ゴールも、選んだことも、否定しません。ゴールに向かう中で、身近な人から反対されることがあっても、私はあなたの味方であり続けます。どこへ向かうかを決めるのは、あなた自身です。</p>
+  </div>
+  <ul class="notes">
+    <li>お返事の下書きにはAIを使い、すべて私が目を通してからお送りしています。</li>
+    <li>このプログラムは、医療やカウンセリングではありません。</li>
+    <li>感想や変化を、お名前を伏せてご紹介することがあります。紹介してよいかは、最後のアンケートで伺います。</li>
+  </ul>
+  <div class="folio"><span>14日間 はじまる前に</span><span>5</span></div>
+</section>
+
+<!-- 6 準備 -->
+<section class="page">
+  <div class="head">
+    <div class="eyebrow">05　はじまるまでに</div>
+    <h2>3つだけ、準備をお願いします</h2>
+  </div>
+  <ul class="check">
+    <li><span class="box"></span><div><b>LINEに「参加します」と送る</b><p>まだの方は、サポート用のLINEに、ひとことだけ送ってください。</p></div></li>
+    <li><span class="box"></span><div><b>LINEの通知をオンにする</b><p>毎朝7時の問いと音声を、見のがさないためです。</p></div></li>
+    <li><span class="box"></span><div><b>10月12日（月）の夜までに、事前アンケートに答える</b><p>10月11日（日）20時に届きます。2分ほどで終わります。</p></div></li>
+  </ul>
+  <div class="closing">
+    <p class="big">あなたの「本当はこうしたい」を、<br>聴かせてもらえるのを楽しみにしています。<br>10月13日の朝7時に、お会いしましょう。</p>
+    <p class="sign">渡辺笙太（SHOTA）</p>
+  </div>
+  <div class="folio"><span>14日間 はじまる前に</span><span>6</span></div>
+</section>
+
+</body>
+</html>
