@@ -5,7 +5,7 @@
 
 - 形式: 横長 1920×1080 / 30fps / H.264 + AAC（元音源をそのまま使用）
 - 長さ: 4分27秒（曲の長さと同じ）
-- 歌詞テロップ: 画面下部に表示。サビは2行ずつ表示し、いま歌っている行を明るくする
+- 歌詞テロップ: 画面下部に表示。日本語の行の下に英訳を小さく表示（英語の行は訳なし）。サビは2行ずつ表示し、いま歌っている行を明るくする
 - 動画ファイル本体はサイズが大きいため、このリポジトリには入れていない
 
 ## 映像の流れ
@@ -33,7 +33,7 @@
 `src/` のスクリプトで作成。すべてプログラムで描画している（素材写真は地球の画像のみ）。
 
 1. `transcribe.py` … Whisper（small）で歌声の単語タイミングを取得
-2. `lyrics.py` … 上の結果をもとに作った歌詞の表示タイミング表（秒）。テロップのずれを直すときはここを編集する
+2. `lyrics.py` … 上の結果をもとに作った歌詞の表示タイミング表（秒）と英訳。テロップのずれや訳を直すときはここを編集する
 3. `analyze.py` … 音源から拍・低音・スペクトルを抽出（映像を音に合わせるため）
 4. `mv.py` … 映像を描画して音声と合成
 
@@ -47,5 +47,5 @@ MV_AUDIO=元音源.m4a python3 mv.py render Coherence_Symphony_MV.mp4
 `assets/` に必要なもの（リポジトリには未収録）:
 
 - `bmng.jpg` … NASA Blue Marble の地球画像（パブリックドメイン。PyPI の `basemap-data` パッケージに同梱）
-- `fonts/ShipporiMincho-500.ttf`, `ShipporiMincho-700.ttf`, `Cinzel-400.ttf`, `Cinzel-600.ttf` … Google Fonts（SIL Open Font License）
+- `fonts/ShipporiMincho-500.ttf`, `ShipporiMincho-700.ttf`, `Cinzel-400.ttf`, `Cinzel-600.ttf`, `CormorantGaramond-Italic-600.ttf`（英訳用） … Google Fonts（SIL Open Font License）
 - `audio_feat.npz` … `analyze.py` の出力

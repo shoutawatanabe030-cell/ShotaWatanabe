@@ -871,6 +871,10 @@ def splat(buf, u, v, w):
 
 
 # ---------------------------------------------------------------- telop
+ROWH = {"ja": 76, "en": 70, "bg": 56, "tr": 52}   # 行の高さ(px)
+TELOP_BOTTOM = 996                                 # テロップ下端（下から約8%）
+
+
 class Telop:
     def __init__(self):
         fd = os.path.join(ASSETS, "fonts")
@@ -881,6 +885,7 @@ class Telop:
             "title": ImageFont.truetype(os.path.join(fd, "Cinzel-600.ttf"), 104),
             "sub": ImageFont.truetype(os.path.join(fd, "ShipporiMincho-500.ttf"), 36),
             "endt": ImageFont.truetype(os.path.join(fd, "Cinzel-600.ttf"), 64),
+            "tr": ImageFont.truetype(os.path.join(fd, "CormorantGaramond-Italic-600.ttf"), 42),
         }
         self.cache = {}
         self.cards = []
@@ -918,7 +923,7 @@ class Telop:
         self.cache[key] = r
         return r
 
-    def blit(self, img, text, kind, cx, cy, alpha, reveal, active, P, tracking=0, textcol=(1, 1, 1)):
+    def blit(self, img, text, kind, cx, cy, alpha, reveal, active, P, tracking=0, textcol=(1, 1, 1), glow_k=1.0):
         mask, glow, shadow, pad, wtext = self.line_img(text, kind, tracking)
         h, w = mask.shape
         x0 = int(round(cx - w / 2)); y0 = int(round(cy - h / 2))
@@ -941,7 +946,7 @@ class Telop:
         gcol = gcol.astype(np.float32)
         act = 0.35 + 0.65 * active
         sub *= (1 - 0.6 * s)[..., None]
-        sub += g[..., None] * gcol * (0.55 * act)
+        sub += g[..., None] * gcol * (0.55 * act * glow_k)
         tc = np.array(textcol, np.float32) * (0.62 + 0.38 * active)
         sub[:] = sub * (1 - m[..., None]) + m[..., None] * tc
 
@@ -953,6 +958,9 @@ class Telop:
             self.blit(img, "COHERENCE SYMPHONY", "title", W / 2, 300, a, rv, 1.0, P, tracking=14)
             a2 = float(smooth((t - 3.0) / 1.5) * (1 - smooth((t - 7.4) / 1.2)))
             self.blit(img, "波動による全宇宙の調和", "sub", W / 2, 395, a2 * 0.9, float(smooth((t - 3.0) / 1.8)), 0.6, P, tracking=10)
+            a3 = float(smooth((t - 3.6) / 1.5) * (1 - smooth((t - 7.4) / 1.2)))
+            self.blit(img, "Harmony of the Whole Universe through Vibration", "tr", W / 2, 447, a3 * 0.85,
+                      float(smooth((t - 3.6) / 1.8)), 0.6, P, tracking=2, glow_k=0.6)
         if t > 261.5:
             a = float(smooth((t - 261.8) / 1.5))
             self.blit(img, "COHERENCE SYMPHONY", "endt", W / 2, 925, a, float(smooth((t - 261.8) / 2.0)), 1.0, P, tracking=10)
@@ -960,20 +968,29 @@ class Telop:
             if t < ts or t > te:
                 continue
             fade = float(1 - smooth((t - (te - 0.35)) / 0.35))
-            if len(lines) == 1:
-                ys = [928]
-            else:
-                ys = [866, 950]
-            for li, ((text, s, e, kind), y) in enumerate(zip(lines, ys)):
-                rv = float(smooth((t - (ts + li * 0.25)) / 0.75))
+            # 行を下から積む（日本語の行の下に英訳）
+            rows = []
+            for li, (text, s, e, kind, tr) in enumerate(lines):
+                rows.append((li, text, kind, s, e))
+                if tr:
+                    rows.append((li, tr, "tr", s, e))
+            y = TELOP_BOTTOM - sum(ROWH[r[2]] for r in rows)
+            for (li, text, kind, s, e) in rows:
+                yc = y + ROWH[kind] / 2; y += ROWH[kind]
+                delay = li * 0.25 + (0.2 if kind == "tr" else 0)
+                rv = float(smooth((t - (ts + delay)) / 0.75))
                 if len(lines) == 1:
                     active = 1.0
                 else:
                     active = float(smooth((t - (s - 0.3)) / 0.3) * (1 - smooth((t - (e + 0.05)) / 0.35)))
                     if li == 0 and t < s:
                         active = 1.0
+                if kind == "tr":
+                    self.blit(img, text, kind, W / 2, yc, fade * 0.92, rv, active, P, tracking=1,
+                              textcol=(0.88, 0.92, 1.0), glow_k=0.6)
+                    continue
                 textcol = (0.92, 0.95, 1.0) if kind == "bg" else (1, 1, 1)
-                self.blit(img, text, kind, W / 2, y, fade * (0.85 if kind == "bg" else 1.0), rv, active, P,
+                self.blit(img, text, kind, W / 2, yc, fade * (0.85 if kind == "bg" else 1.0), rv, active, P,
                           tracking=4 if kind != "ja" else 2, textcol=textcol)
 
 
