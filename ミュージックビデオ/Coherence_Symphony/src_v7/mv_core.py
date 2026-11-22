@@ -28,11 +28,12 @@ AUDIO = os.environ.get("MV_AUDIO", "")
 sys.path.insert(0, HERE)
 from lyrics import CARDS
 
-W, H = 1920, 1080
+W, H = (1080, 1920) if os.environ.get("MV_VERTICAL") else (1920, 1080)
+VERTICAL = H > W
 HW, HH = W // 2, H // 2
 FPS = 30
 F = 1500.0                 # 焦点距離 (px)
-CX, CY = W / 2, H / 2 - 50  # 主点（地球を少し上に置いてテロップと重ならないように）
+CX, CY = W / 2, (H / 2 - 150 if VERTICAL else H / 2 - 50)  # 主点（地球を少し上に置いてテロップと重ならないように）
 
 # ---------------------------------------------------------------- helpers
 def smooth(u):
@@ -1075,7 +1076,8 @@ def splat(buf, u, v, w):
 
 # ---------------------------------------------------------------- telop
 ROWH = {"ja": 76, "en": 70, "bg": 56, "tr": 52}   # 行の高さ(px)
-TELOP_BOTTOM = 996                                 # テロップ下端（下から約8%）
+TELOP_BOTTOM = int(H * 0.80) if VERTICAL else 996  # テロップ下端（横長: 下から約8% / 縦長: 下から約20%）
+TELOP_MAXW = int(W * 0.86)                         # テロップの最大幅（超える行は文字を小さくする）
 
 
 class Telop:
@@ -1108,6 +1110,13 @@ class Telop:
         pad = 40
         chars = list(text)
         widths = [font.getlength(ch) + tracking for ch in chars]
+        if sum(widths) > TELOP_MAXW:
+            # 画面幅に収まらない行は、文字を小さくして収める
+            path = font.path
+            size = max(12, int(font.size * TELOP_MAXW / sum(widths)))
+            font = ImageFont.truetype(path, size)
+            tracking = tracking * size / self.fonts[kind].size
+            widths = [font.getlength(ch) + tracking for ch in chars]
         tw = int(sum(widths)) + 2 * pad
         asc, desc = font.getmetrics()
         th = asc + desc + 2 * pad
@@ -1158,19 +1167,26 @@ class Telop:
         if 1.2 < t < 8.8:
             a = float(smooth((t - 1.4) / 1.6) * (1 - smooth((t - 7.4) / 1.2)))
             rv = float(smooth((t - 1.4) / 2.2))
-            self.blit(img, "COHERENCE SYMPHONY", "title", W / 2, 300, a, rv, 1.0, P, tracking=14)
+            if VERTICAL:
+                y0 = H * 0.30
+                self.blit(img, "COHERENCE", "title", W / 2, y0, a, rv, 1.0, P, tracking=14)
+                self.blit(img, "SYMPHONY", "title", W / 2, y0 + 118, a, rv, 1.0, P, tracking=14)
+                ty = (y0 + 222, y0 + 280)
+            else:
+                self.blit(img, "COHERENCE SYMPHONY", "title", W / 2, 300, a, rv, 1.0, P, tracking=14)
+                ty = (395, 447)
             a2 = float(smooth((t - 3.0) / 1.5) * (1 - smooth((t - 7.4) / 1.2)))
-            self.blit(img, "波動による全宇宙の調和", "sub", W / 2, 395, a2 * 0.9, float(smooth((t - 3.0) / 1.8)), 0.6, P, tracking=10)
+            self.blit(img, "波動による全宇宙の調和", "sub", W / 2, ty[0], a2 * 0.9, float(smooth((t - 3.0) / 1.8)), 0.6, P, tracking=10)
             a3 = float(smooth((t - 3.6) / 1.5) * (1 - smooth((t - 7.4) / 1.2)))
-            self.blit(img, "Harmony of the Whole Universe through Vibration", "tr", W / 2, 447, a3 * 0.85,
+            self.blit(img, "Harmony of the Whole Universe through Vibration", "tr", W / 2, ty[1], a3 * 0.85,
                       float(smooth((t - 3.6) / 1.8)), 0.6, P, tracking=2, glow_k=0.6)
         if t > 261.5:
             a = float(smooth((t - 261.8) / 1.5))
-            self.blit(img, "COHERENCE SYMPHONY", "endt", W / 2, 890, a, float(smooth((t - 261.8) / 2.0)), 1.0, P, tracking=10)
+            self.blit(img, "COHERENCE SYMPHONY", "endt", W / 2, (H * 0.72 if VERTICAL else 890), a, float(smooth((t - 261.8) / 2.0)), 1.0, P, tracking=10)
         if t > 263.0:
             # クレジット（最後の最後まで表示）
             a = float(smooth((t - 263.2) / 1.2))
-            self.blit(img, "Lyric & Music by Shota Watanabe", "tr", W / 2, 962, a * 0.95, float(smooth((t - 263.2) / 1.6)),
+            self.blit(img, "Lyric & Music by Shota Watanabe", "tr", W / 2, (H * 0.72 + 72 if VERTICAL else 962), a * 0.95, float(smooth((t - 263.2) / 1.6)),
                       1.0, P, tracking=2, textcol=(0.93, 0.95, 1.0), glow_k=0.6)
         for (ts, te, lines) in self.cards:
             if t < ts or t > te:

@@ -10,7 +10,7 @@ import os, math
 import numpy as np
 import cv2
 
-W, H = 1920, 1080
+W, H = (1080, 1920) if os.environ.get("MV_VERTICAL") else (1920, 1080)
 REALDIR = os.environ.get("MV_REAL", os.path.join(os.path.dirname(os.path.abspath(__file__)), "real"))
 BEAT = 60 / 128.5714
 _cache = {}
@@ -62,7 +62,7 @@ def load(name, need_bg=True):
 def _grad():
     if "_grad" not in _cache:
         y = np.arange(H, dtype=np.float32)
-        u = np.clip((y - 640) / 440, 0, 1)
+        u = np.clip((y - H * 0.593) / (H * 0.407), 0, 1)
         _cache["_grad"] = (1 - 0.55 * u * u * (3 - 2 * u))[:, None, None].astype(np.float32)
     return _cache["_grad"]
 
@@ -89,7 +89,7 @@ def _sweep(out, u, col, k=0.09):
 
 
 def shot(tl, t, G, img, layout=None, z=(1.0, 1.07), c0=(0.5, 0.5), c1=(0.5, 0.5), shot_len=4.0,
-         glow=(1.0, 0.82, 0.55), particles=60, sweep=True, card_h=0.9, card_y=0.47, seed=0, bottom=0.55,
+         glow=(1.0, 0.82, 0.55), particles=60, sweep=True, card_h=0.9, card_y=None, seed=0, bottom=0.55, card_w=0.94,
          seq=0, seq_fps=30):
     if seq:
         # 動画（連番の画像）: 背景のぼかしと角丸は最初のコマのものを使い回す
@@ -103,7 +103,12 @@ def shot(tl, t, G, img, layout=None, z=(1.0, 1.07), c0=(0.5, 0.5), c1=(0.5, 0.5)
     u = tl / max(shot_len, 1e-3)
     eu = float(smooth(u)) * 0.5 + u * 0.5
     beat = G.get("beat", 0.0); bass = G.get("bass", 0.5)
-    layout = layout or ("card" if sw / sh < 1.25 else "cover")
+    if H > W:
+        layout = layout or ("cover" if sw / sh < 0.85 else "card")   # 縦長の画面: 縦の写真は全面、横の写真は中央に
+        card_y = 0.42 if card_y is None else card_y
+    else:
+        layout = layout or ("card" if sw / sh < 1.25 else "cover")
+        card_y = 0.47 if card_y is None else card_y
     if layout == "cover":
         zz = z[0] + (z[1] - z[0]) * eu
         cx = (c0[0] + (c1[0] - c0[0]) * eu) * sw
@@ -121,7 +126,7 @@ def shot(tl, t, G, img, layout=None, z=(1.0, 1.07), c0=(0.5, 0.5), c1=(0.5, 0.5)
         Mb = np.float32([[bz, 0, bx - bz * bw / 2], [0, bz, by - bz * bh / 2]])
         out = cv2.warpAffine(bg, Mb, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
         zz = z[0] + (z[1] - z[0]) * eu
-        s = card_h * H / sh * zz
+        s = min(card_h * H / sh, card_w * W / sw) * zz
         ccx = W / 2 + 18 * (eu - 0.5); ccy = card_y * H
         Mc = np.float32([[s, 0, ccx - s * sw / 2], [0, s, ccy - s * sh / 2]])
         card = cv2.warpAffine(src, Mc, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)

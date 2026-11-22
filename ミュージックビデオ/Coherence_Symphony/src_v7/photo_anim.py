@@ -9,7 +9,7 @@ import os, math
 import numpy as np
 import cv2
 
-W, H = 1920, 1080
+W, H = (1080, 1920) if os.environ.get("MV_VERTICAL") else (1920, 1080)
 IMGDIR = os.environ.get("MV_PHOTOS", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "src_v3", "photos"))
 BEAT = 60 / 128.5714
 AW, AH = 640, 360          # 補助マップの解像度
@@ -29,7 +29,7 @@ def _grid():
     if "_grid" not in _cache:
         X, Y = np.meshgrid(np.arange(W, dtype=np.float32), np.arange(H, dtype=np.float32))
         y = np.arange(H, dtype=np.float32)
-        u = np.clip((y - 640) / 440, 0, 1)
+        u = np.clip((y - H * 0.593) / (H * 0.407), 0, 1)
         grad = (1 - 0.55 * u * u * (3 - 2 * u))[:, None, None].astype(np.float32)
         _cache["_grid"] = (X, Y, grad)
     return _cache["_grid"]

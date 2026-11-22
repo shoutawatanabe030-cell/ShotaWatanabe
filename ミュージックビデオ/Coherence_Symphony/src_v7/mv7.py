@@ -345,6 +345,37 @@ for s_ in S:
 assert not REAL, REAL.keys()
 S[:] = _new
 
+
+# ---- 縦動画（MV_VERTICAL=1）: 横長の画像は縦に切り抜き、人物から人物へゆっくり横に流す
+VERTICAL = bool(os.environ.get("MV_VERTICAL"))
+if VERTICAL:
+    VOVR = {
+        38.67: dict(c0=(0.17, 0.5), c1=(0.5, 0.5), z=(1.0, 1.04)),
+        45.97: dict(c0=(0.3, 0.5), c1=(0.72, 0.5), z=(1.0, 1.0)),
+        49.63: dict(c0=(0.74, 0.45), c1=(0.71, 0.45), z=(1.1, 1.02)),
+        53.30: dict(c0=(0.22, 0.45), c1=(0.26, 0.45), z=(1.06, 1.0)),
+        56.97: dict(c0=(0.28, 0.5), c1=(0.78, 0.5), z=(1.0, 1.0)),
+        60.63: dict(c0=(0.42, 0.45), c1=(0.36, 0.45), z=(1.0, 1.06)),
+        67.97: dict(c0=(0.54, 0.52), c1=(0.6, 0.5), z=(1.0, 1.04)),
+        71.63: dict(c0=(0.5, 0.5), c1=(0.51, 0.5), z=(1.0, 1.06)),
+        113.77: dict(c0=(0.48, 0.52), c1=(0.48, 0.53), z=(1.0, 1.06)),
+        121.10: dict(c0=(0.55, 0.45), c1=(0.58, 0.45), z=(1.0, 1.05)),
+        124.77: dict(c0=(0.62, 0.42), c1=(0.6, 0.4), z=(1.15, 1.05)),
+        132.10: dict(c0=(0.48, 0.45), c1=(0.62, 0.48), z=(1.0, 1.04)),
+        166.93: dict(layout="cover", c0=(0.5, 0.5), c1=(0.5, 0.48)),
+        172.47: dict(c0=(0.42, 0.45), c1=(0.55, 0.42), z=(1.0, 1.04)),
+        176.13: dict(c0=(0.22, 0.5), c1=(0.78, 0.5), z=(1.0, 1.0)),
+        179.80: dict(layout="cover", c0=(0.48, 0.5), c1=(0.52, 0.47)),
+        187.13: dict(c0=(0.48, 0.5), c1=(0.53, 0.47), z=(1.0, 1.06)),
+        214.80: dict(c0=(0.5, 0.55), c1=(0.56, 0.55), z=(1.0, 1.05)),
+        236.80: dict(c0=(0.36, 0.5), c1=(0.44, 0.52), z=(1.0, 1.05)),
+        248.00: dict(c0=(0.45, 0.5), c1=(0.55, 0.45), z=(1.0, 1.05)),
+    }
+    for s_ in S:
+        key = round(s_["t0"], 2)
+        if key in VOVR:
+            s_["kw"] = dict(s_["kw"], **VOVR[key])
+
 for i in range(len(S) - 1):
     assert abs(S[i]["t1"] - S[i + 1]["t0"]) < 1e-6, (i, S[i]["t1"], S[i + 1]["t0"])
 
@@ -494,7 +525,7 @@ def main():
         for a in sys.argv[2:]:
             t = float(a); t0 = time.time()
             fr = m.render(t)
-            fn = os.path.join(pv, f"v7_{t:07.2f}.jpg")
+            fn = os.path.join(pv, f"{'vv' if VERTICAL else 'v7'}_{t:07.2f}.jpg")
             cv2.imwrite(fn, fr[:, :, ::-1], [cv2.IMWRITE_JPEG_QUALITY, 88])
             print(fn, f"{time.time() - t0:.2f}s", flush=True)
     elif mode == "shots":
@@ -514,7 +545,7 @@ def main():
         nproc = int(os.environ.get("MV_PROCS", "4"))
         dur = float(np.load(os.path.join(mc.ASSETS, "audio_feat.npz"))["dur"])
         n1 = int(math.ceil(dur * FPS))
-        segdir = os.path.join(HERE, "segs7"); os.makedirs(segdir, exist_ok=True)
+        segdir = os.path.join(HERE, "segs7v" if VERTICAL else "segs7"); os.makedirs(segdir, exist_ok=True)
         nseg = nproc * 4
         bounds = np.linspace(0, n1, nseg + 1).astype(int)
         jobs = [(int(bounds[k]), int(bounds[k + 1]), os.path.join(segdir, f"seg{k:03d}.mp4")) for k in range(nseg)]

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """地球の内部（断面）: 4分の1を切り取った地球。核が鼓動し、波が地表・宇宙へ広がる"""
-import math
+import os, math
 import numpy as np
 import cv2
 
-W, H = 1920, 1080
+W, H = (1080, 1920) if os.environ.get("MV_VERTICAL") else (1920, 1080)
 
 
 def smooth(u):
@@ -45,10 +45,14 @@ class Core:
         self.cache[key] = g
         return g
 
-    def render(self, t, P, cx=960, cy=500, R=360, yaw=-0.42, pitch=0.32, cut=1.0, pulse=1.0, waves=1.0,
+    def render(self, t, P, cx=None, cy=None, R=360, yaw=-0.42, pitch=0.32, cut=1.0, pulse=1.0, waves=1.0,
                rise=0.0, glow=1.0):
         """線形RGBの画像を返す（背景は透明=黒、宇宙背景は別途）"""
         img = np.zeros((H, W, 3), np.float32)
+        if cx is None:
+            cx = W / 2
+        if cy is None:
+            cy = H * 0.42 if H > W else 500
         x, y, (x0, x1, y0, y1) = self.grid(cx, cy, R)
         d2 = x * x + y * y
         inside = d2 < 1

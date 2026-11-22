@@ -3,11 +3,11 @@
 人物シルエットと地上の風景（逆光の人々が手を取り合い、波動を共鳴させるシーン用）
 すべて手続き的に描画する。座標はフル解像度 1920x1080。
 """
-import math
+import os, math
 import numpy as np
 import cv2
 
-W, H = 1920, 1080
+W, H = (1080, 1920) if os.environ.get("MV_VERTICAL") else (1920, 1080)
 SH = 4            # cv2 サブピクセル (2^4)
 K = 1 << SH
 
