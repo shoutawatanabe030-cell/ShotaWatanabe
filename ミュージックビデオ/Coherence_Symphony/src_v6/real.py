@@ -30,15 +30,16 @@ def _lin(im):
     return (-np.log(1 - v) / 1.15).astype(np.float32)
 
 
-def load(name):
-    if name in _cache:
-        return _cache[name]
+def load(name, need_bg=True):
+    key = (name, need_bg)
+    if key in _cache:
+        return _cache[key]
     if len(_cache) > 6:
         _cache.pop(next(iter(_cache)))
     im = cv2.imread(os.path.join(REALDIR, name), cv2.IMREAD_COLOR)[:, :, ::-1].astype(np.float32) / 255.0
     sh, sw = im.shape[:2]
     ent = dict(src=_lin(im), sw=sw, sh=sh)
-    if True:
+    if need_bg:
         # 背景用: 画面を覆う大きさにして強くぼかし、暗くする
         s = max(W * 1.2 / sw, H * 1.2 / sh)
         bg = cv2.resize(im, (int(sw * s), int(sh * s)), interpolation=cv2.INTER_AREA)
@@ -54,7 +55,7 @@ def load(name):
         for cx, cy in ((r, r), (sw - r, r), (r, sh - r), (sw - r, sh - r)):
             cv2.circle(m, (cx, cy), r, 255, -1, cv2.LINE_AA)
         ent["mask"] = m.astype(np.float32) / 255.0
-    _cache[name] = ent
+    _cache[key] = ent
     return ent
 
 
@@ -88,8 +89,16 @@ def _sweep(out, u, col, k=0.09):
 
 
 def shot(tl, t, G, img, layout=None, z=(1.0, 1.07), c0=(0.5, 0.5), c1=(0.5, 0.5), shot_len=4.0,
-         glow=(1.0, 0.82, 0.55), particles=60, sweep=True, card_h=0.9, card_y=0.47, seed=0, bottom=0.55):
-    e = load(img)
+         glow=(1.0, 0.82, 0.55), particles=60, sweep=True, card_h=0.9, card_y=0.47, seed=0, bottom=0.55,
+         seq=0, seq_fps=30):
+    if seq:
+        # 動画（連番の画像）: 背景のぼかしと角丸は最初のコマのものを使い回す
+        first = load(img % 1)
+        idx = min(int(tl * seq_fps), seq - 1)
+        cur = load(img % (idx + 1), need_bg=False)
+        e = dict(first); e["src"] = cur["src"]
+    else:
+        e = load(img)
     src, sw, sh = e["src"], e["sw"], e["sh"]
     u = tl / max(shot_len, 1e-3)
     eu = float(smooth(u)) * 0.5 + u * 0.5
