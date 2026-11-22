@@ -230,6 +230,15 @@ def shot(tl, t, G, img, z=(1.0, 1.06), c0=(0.5, 0.5), c1=(0.5, 0.5), fx=(), grad
             Xc, Yc = to_screen(x, y)
             k = 0.6 + 0.8 * beat * (0.4 + bass)
             cv2.circle(glow, P(Xc, Yc), int(r * 16), tuple(float(c) * k for c in col), -1, cv2.LINE_AA, 4)
+        elif kind == "halo":
+            # デバイスの周りだけをやわらかく光らせる（本体のロゴは白飛びさせない）
+            _, x, y, col, r = f
+            Xc, Yc = to_screen(x, y)
+            k = 0.5 + 0.5 * beat * (0.4 + bass)
+            canvas = np.zeros((H // 4, W // 4, 3), np.float32)
+            cv2.circle(canvas, P(Xc / 4, Yc / 4), int(r * s / 4 * 16), tuple(float(c) * k for c in col), 4, cv2.LINE_AA, 4)
+            halo = cv2.resize(cv2.GaussianBlur(canvas, (0, 0), max(2.0, r * s / 4 * 0.35)), (W, H))
+            out += halo * 0.9
         elif kind == "particles":
             _, x0, x1, y0, y1, col, n = f
             rng = np.random.default_rng(int(x0 * 1000 + y0 * 100 + n))
