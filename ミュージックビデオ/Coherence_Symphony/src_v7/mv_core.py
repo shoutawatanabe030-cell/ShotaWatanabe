@@ -1166,7 +1166,12 @@ class Telop:
                       float(smooth((t - 3.6) / 1.8)), 0.6, P, tracking=2, glow_k=0.6)
         if t > 261.5:
             a = float(smooth((t - 261.8) / 1.5))
-            self.blit(img, "COHERENCE SYMPHONY", "endt", W / 2, 925, a, float(smooth((t - 261.8) / 2.0)), 1.0, P, tracking=10)
+            self.blit(img, "COHERENCE SYMPHONY", "endt", W / 2, 890, a, float(smooth((t - 261.8) / 2.0)), 1.0, P, tracking=10)
+        if t > 263.0:
+            # クレジット（最後の最後まで表示）
+            a = float(smooth((t - 263.2) / 1.2))
+            self.blit(img, "Lyric & Music by Shota Watanabe", "tr", W / 2, 962, a * 0.95, float(smooth((t - 263.2) / 1.6)),
+                      1.0, P, tracking=2, textcol=(0.93, 0.95, 1.0), glow_k=0.6)
         for (ts, te, lines) in self.cards:
             if t < ts or t > te:
                 continue
